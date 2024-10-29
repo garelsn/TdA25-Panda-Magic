@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask
+from flask import Flask, jsonify
 from . import db
 
 app = Flask(__name__)
@@ -22,6 +22,9 @@ db.init_app(app)
 def hello_world():  # put application's code here
     return "Hello Tour de App!"
 
+@app.route('/api', methods=['GET'])
+def api(): 
+    return jsonify({"organization": "Student Cyber Games"})
 
 if __name__ == '__main__':
     app.run()

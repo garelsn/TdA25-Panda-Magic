@@ -57,6 +57,7 @@ def initNewGame():
             }
             ), 422
     
+    sqlDB = db.get_db()
     unique_id = str(uuid.uuid4())
     current_time = datetime.utcnow().isoformat(timespec='milliseconds') + "Z"
     # Přidáme unique_id do odpovědi
@@ -69,6 +70,13 @@ def initNewGame():
         "gameState":"midgame",
         "board":data.get("board")
     }
+    sqlDB.execute(
+        'INSERT INTO games (uuid, name, difficulty, gameState, board, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        (response["uuid"], response["name"], response["difficulty"],response["gameState"], str(response["board"]), response["createdAt"], response["updatedAt"] )
+    )
+    sqlDB.commit()
+    
+
 
     return jsonify(response), 201
 

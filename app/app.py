@@ -33,7 +33,7 @@ def hello_world():  # put application's code here
 @app.route('/api', methods=['GET'])
 def api(): 
     return jsonify({"organization": "Student Cyber Games"})
-
+# testPOST
 @app.route('/games', methods=['POST'])
 
 def initNewGame():

@@ -35,9 +35,7 @@ def api():
     return jsonify({"organization": "Student Cyber Games"})
 
 @app.route('/games', methods=['POST'])
-
 def initNewGame():
-
 
     data = request.get_json()
     if(data.get("name")== None or data.get("difficulty")== None or data.get("board")== None):
@@ -47,7 +45,7 @@ def initNewGame():
                 "message": "Bad request: Missing"
             }
             ), 400
-    
+
     valid, message = validator(data.get("board"))
     if not valid:
         return jsonify(
@@ -56,11 +54,11 @@ def initNewGame():
                 "message": f"Semantic error: {message}"
             }
             ), 422
-    
+
     sqlDB = db.get_db()
     unique_id = str(uuid.uuid4())
     current_time = datetime.utcnow().isoformat(timespec='milliseconds') + "Z"
-    # Přidáme unique_id do odpovědi
+    # Add unique_id to the response
     response = {
         "uuid": unique_id,
         "createdAt":current_time,
@@ -75,10 +73,20 @@ def initNewGame():
         (response["uuid"], response["name"], response["difficulty"],response["gameState"], str(response["board"]), response["createdAt"], response["updatedAt"] )
     )
     sqlDB.commit()
-    
-
 
     return jsonify(response), 201
+
+@app.route("/games", methods=["GET"])
+def returnAllGames():
+
+    sqlDB = db.get_db()
+    
+    cursor = sqlDB.cursor()
+    cursor.execute("SELECT * FROM games")
+    DBItems = cursor.fetchall()
+
+    return jsonify(DBItems), 200
+
 
 
 if __name__ == '__main__':

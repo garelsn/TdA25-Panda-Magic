@@ -85,9 +85,31 @@ def returnAllGames():
     cursor.execute("SELECT * FROM games")
     DBItems = cursor.fetchall()
 
-    return jsonify(DBItems), 200
+    column_names = [ description[0] for description in cursor.description ]
+    result = [ { column_names[i]: row[i] for i in range(len(column_names)) } for row in DBItems]
 
+    return jsonify(result), 200
 
+@app.route("/games/<uuid>", methods=["GET"])
+def returnGameById(uuid):
+    sqlDB = db.get_db()
+    
+    cursor = sqlDB.cursor()
+    cursor.execute("SELECT * FROM games WHERE uuid=?", (uuid,))
+    DBItem = cursor.fetchone()
+
+    if DBItem is None:
+        return jsonify(
+            {
+                "code": 404,
+                "message": "Resource not found"
+            }
+            ), 404
+
+    column_names = [ description[0] for description in cursor.description ]
+    result = { column_names[i]: DBItem[i] for i in range(len(column_names)) }
+
+    return jsonify(result), 200
 
 if __name__ == '__main__':
     app.run(debug=True)

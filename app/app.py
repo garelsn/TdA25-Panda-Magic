@@ -9,6 +9,8 @@ from datetime import datetime
 
 from .validator import validator
 
+from ast import literal_eval
+
 
 app = Flask(__name__)
 
@@ -66,7 +68,7 @@ def initNewGame():
         "name": data.get("name"),
         "difficulty": data.get("difficulty"),
         "gameState":"midgame",
-        "board":data.get("board")
+        "board": list(data.get("board"))
     }
     sqlDB.execute(
         'INSERT INTO games (uuid, name, difficulty, gameState, board, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?)',
@@ -85,8 +87,15 @@ def returnAllGames():
     cursor.execute("SELECT * FROM games")
     DBItems = cursor.fetchall()
 
+    sqlDB.close()
+
     column_names = [ description[0] for description in cursor.description ]
     result = [ { column_names[i]: row[i] for i in range(len(column_names)) } for row in DBItems]
+
+    for game in result:
+        for row in game:
+            if row == "board":
+                game[row] = literal_eval(game[row])
 
     return jsonify(result), 200
 
@@ -104,12 +113,70 @@ def returnGameById(uuid):
                 "code": 404,
                 "message": "Resource not found"
             }
-            ), 404
+        ), 404
+
+    sqlDB.close()
 
     column_names = [ description[0] for description in cursor.description ]
     result = { column_names[i]: DBItem[i] for i in range(len(column_names)) }
 
+    result["board"] = literal_eval(result["board"])
+
     return jsonify(result), 200
+
+@app.route("/games/<uuid>", methods=["PUT"])
+def updateGameById(uuid):
+    data = request.get_json()
+    if(data.get("name")== None or data.get("difficulty")== None or data.get("board")== None):
+        return jsonify(
+            {
+                "code": 400,
+                "message": "Bad request: Missing"
+            }
+        ), 400
+    valid, message = validator(data.get("board"))
+    if not valid:
+        return jsonify(
+            {
+                "code": 422,
+                "message": f"Semantic error: {message}"
+            }
+        ), 422
+    
+    sqlDB = db.get_db()
+    
+    cursor = sqlDB.cursor()
+    cursor.execute("SELECT * FROM games WHERE uuid=?", (uuid,))
+    DBItem = cursor.fetchone()
+
+    if DBItem is None:
+        return jsonify(
+            {
+                "code": 404,
+                "message": "Resource not found"
+            }
+        ), 404
+    
+    current_time = datetime.utcnow().isoformat(timespec='milliseconds') + "Z"
+
+    response = {
+        "uuid": uuid,
+        "createdAt": DBItem["createdAt"],
+        "updatedAt": current_time,
+        "name": data["name"],
+        "difficulty": data["difficulty"],
+        "gameState": DBItem["gameState"],
+        "board":data["board"]
+    }
+
+    sqlDB.execute(
+        'UPDATE games SET name=?, difficulty=?, board=?, updatedAt=? WHERE uuid=?',
+        (response["name"], response["difficulty"], str(response["board"]), current_time, uuid)
+    )
+
+    sqlDB.commit()
+
+    return jsonify(response), 200
 
 if __name__ == '__main__':
     app.run(debug=True)

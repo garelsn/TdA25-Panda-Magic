@@ -36,7 +36,11 @@ def hello_world():  # put application's code here
 def api(): 
     return jsonify({"organization": "Student Cyber Games"})
 
+
 @app.route('/games', methods=['POST'])
+
+
+@app.route('/api/v1/games', methods=['POST'])
 def initNewGame():
 
     data = request.get_json()

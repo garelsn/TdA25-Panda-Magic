@@ -37,9 +37,6 @@ def api():
     return jsonify({"organization": "Student Cyber Games"})
 
 
-@app.route('/games', methods=['POST'])
-
-
 @app.route('/api/v1/games', methods=['POST'])
 def initNewGame():
 
@@ -82,7 +79,7 @@ def initNewGame():
 
     return jsonify(response), 201
 
-@app.route("/games", methods=["GET"])
+@app.route("/api/v1/games", methods=["GET"])
 def returnAllGames():
 
     sqlDB = db.get_db()
@@ -103,7 +100,7 @@ def returnAllGames():
 
     return jsonify(result), 200
 
-@app.route("/games/<uuid>", methods=["GET"])
+@app.route("/api/v1/games/<uuid>", methods=["GET"])
 def returnGameById(uuid):
     sqlDB = db.get_db()
     
@@ -128,7 +125,7 @@ def returnGameById(uuid):
 
     return jsonify(result), 200
 
-@app.route("/games/<uuid>", methods=["PUT"])
+@app.route("/api/v1/games/<uuid>", methods=["PUT"])
 def updateGameById(uuid):
     data = request.get_json()
     if(data.get("name")== None or data.get("difficulty")== None or data.get("board")== None):

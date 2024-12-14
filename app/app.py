@@ -1,6 +1,9 @@
 import os
 
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
+
+
+
 from . import db
 
 import uuid
@@ -13,6 +16,7 @@ from ast import literal_eval
 
 
 app = Flask(__name__)
+
 
 
 app.config.from_mapping(
@@ -30,7 +34,21 @@ db.init_app(app)
 
 @app.route('/')
 def hello_world():  # put application's code here
-    return "Hello TdA 🐼 Magic "
+    return render_template("index.html")  # Vrátí HTML soubor z templates
+    # return "Hello TdA 🐼 Magic "
+
+@app.route('/game')
+def gammme():  # put application's code here
+    return render_template("index.html")  # Vrátí HTML soubor z templates
+    # return "Hello TdA 🐼 Magic "
+
+
+@app.route('/game/<string:uuid>')
+def gameUUID(uuid):  # put application's code here
+    return render_template("index.html")  # Vrátí HTML soubor z templates
+    # return "Hello TdA 🐼 Magic "
+
+    
 
 @app.route('/api', methods=['GET'])
 def api(): 

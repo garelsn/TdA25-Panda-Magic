@@ -1,35 +1,67 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import Board from "./Board";
+import DelateButton from "./DelateButton";
+import UpdateButton from "./UpdateButton";
 
 interface Game {
   name: string;
+  board: string[][];
 }
 
 function GamePage() {
   const { uuid } = useParams(); // Získá UUID z URL
   const [game, setGame] = useState<Game | null>(null);
-  const [error, setError] = useState(null);
-  const baseUrl = import.meta.env.VITE_REACT_APP_API_BASE_URL ||""
-  console.log(baseUrl)
+  const [error, setError] = useState<string | null>(null);
+  const [board, setBoard] = useState<string[][] | null>(null);
+  const [currentPlayer, setCurrentPlayer] = useState<"X" | "O">("X");
+  const baseUrl = import.meta.env.VITE_REACT_APP_API_BASE_URL || "";
+
   useEffect(() => {
     // Zavolej API pro načtení hry
-    fetch(`${baseUrl}/api/v1/games/${uuid}`)
-      .then((response) => {
+    const fetchGame = async () => {
+      try {
+        const response = await fetch(`${baseUrl}/api/v1/games/${uuid}`);
         if (!response.ok) {
           throw new Error(`Chyba při načítání hry: ${response.status}`);
         }
-        return response.json();
-      })
-      .then((data) => setGame(data))
-      .catch((err) => setError(err.message));
-  }, [uuid]);
+        const data: Game = await response.json();
+        setGame(data);
+        setBoard(data.board); // Inicializace herní desky
+      } catch (err: any) {
+        setError(err.message || "Došlo k neznámé chybě.");
+      }
+    };
+    fetchGame();
+  }, [uuid, baseUrl]);
 
   if (error) return <div>Chyba: {error}</div>;
-  if (!game) return <div>Načítám...</div>;
-  console.log(game)
+  if (!game || !board) return <div>Načítám...</div>;
+
+  const handleCellClick = (row: number, col: number) => {
+    // Pokud je buňka už obsazená, nic se nestane
+    if (board[row][col] !== "") return;
+
+    // Aktualizace herního plánu
+    const newBoard = board.map((r, rowIndex) =>
+      r.map((cell, colIndex) =>
+        rowIndex === row && colIndex === col ? currentPlayer : cell
+      )
+    );
+
+    setBoard(newBoard);
+
+    // Přepnutí hráče
+    setCurrentPlayer(currentPlayer === "X" ? "O" : "X");
+  };
+
   return (
     <div>
+      <DelateButton />
+      <UpdateButton board={board} />
       <h1>{game.name}</h1>
+      <p>Na tahu: {currentPlayer}</p>
+      <Board board={board} onCellClick={handleCellClick} />
     </div>
   );
 }

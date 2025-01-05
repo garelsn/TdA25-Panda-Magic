@@ -12,11 +12,15 @@ from datetime import datetime
 
 from .validator import validator
 
+from .gameLogic import game_status
+
 from ast import literal_eval
 
+# from flask_cors import CORS
 
 app = Flask(__name__)
 
+# CORS(app)
 
 
 app.config.from_mapping(
@@ -76,6 +80,8 @@ def initNewGame():
             }
             ), 422
 
+    status = game_status(list(data.get("board")))
+
     sqlDB = db.get_db()
     unique_id = str(uuid.uuid4())
     current_time = datetime.utcnow().isoformat(timespec='milliseconds') + "Z"
@@ -86,7 +92,7 @@ def initNewGame():
         "updatedAt":current_time,
         "name": data.get("name"),
         "difficulty": data.get("difficulty"),
-        "gameState":"midgame",
+        "gameState":status,
         "board": list(data.get("board"))
     }
     sqlDB.execute(
@@ -177,20 +183,20 @@ def updateGameById(uuid):
         ), 404
     
     current_time = datetime.utcnow().isoformat(timespec='milliseconds') + "Z"
-
+    status = game_status(list(data.get("board")))
     response = {
         "uuid": uuid,
         "createdAt": DBItem["createdAt"],
         "updatedAt": current_time,
         "name": data["name"],
         "difficulty": data["difficulty"],
-        "gameState": DBItem["gameState"],
+        "gameState": status,
         "board":data["board"]
     }
 
     sqlDB.execute(
-        'UPDATE games SET name=?, difficulty=?, board=?, updatedAt=? WHERE uuid=?',
-        (response["name"], response["difficulty"], str(response["board"]), current_time, uuid)
+        'UPDATE games SET name=?, difficulty=?, gameState=?, board=?, updatedAt=? WHERE uuid=?',
+        (response["name"], response["difficulty"], response["gameState"], str(response["board"]), current_time, uuid)
     )
 
     sqlDB.commit()

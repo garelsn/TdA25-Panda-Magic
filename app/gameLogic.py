@@ -60,10 +60,12 @@ def DiagonalWinLeftToRight(board):
             if board[row][col] == board[row + 1][col + 1] == board[row + 2][col + 2] == board[row + 3][col + 3]:
                 if board[row][col] in {"X", "O"}:
                     # Zkontroluj předchozí a následující pozici
-                    before = row > 0 and col > 0 and board[row - 1][col - 1] in {"", " "}
-                    after = row + 4 < rows and col + 4 < cols and board[row + 4][col + 4] in {"", " "}
-                    if before or after:
+                    if (row > 0 and col > 0 and board[row - 1][col - 1] in {"", " "}) and (row + 4 < rows and col + 4 < cols and board[row + 4][col + 4] in {"", " "}):
                         return True
+                    # before = row > 0 and col > 0 and board[row - 1][col - 1] in {"", " "}
+                    # after = row + 4 < rows and col + 4 < cols and board[row + 4][col + 4] in {"", " "}
+                    # if before or after:
+                    #     return True
     return False
 
 
@@ -75,8 +77,10 @@ def DiagonalWinRightToLeft(board):
             if board[row][col] == board[row + 1][col - 1] == board[row + 2][col - 2] == board[row + 3][col - 3]:
                 if board[row][col] in {"X", "O"}:
                     # Zkontroluj předchozí a následující pozici
-                    before = row > 0 and col < cols - 1 and board[row - 1][col + 1] in {"", " "}
-                    after = row + 4 < rows and col - 4 >= 0 and board[row + 4][col - 4] in {"", " "}
-                    if before or after:
+                     if (row > 0 and col < cols - 1 and board[row - 1][col + 1] in {"", " "}) and (row + 4 < rows and col - 4 >= 0 and board[row + 4][col - 4] in {"", " "}):
                         return True
+                    # before = row > 0 and col < cols - 1 and board[row - 1][col + 1] in {"", " "}
+                    # after = row + 4 < rows and col - 4 >= 0 and board[row + 4][col - 4] in {"", " "}
+                    # if before or after:
+                    #     return True
     return False

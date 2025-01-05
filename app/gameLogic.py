@@ -2,15 +2,15 @@
 
 def game_status(board):
     if checkWin(board):
-        return "Koncovka"
+        return "endgame"
     """
     Určuje stav hry na základě počtu tahů.
     """
     moves = count_moves(board)
     if moves <= 5:
-        return "Zahájení"
+        return "opening"
     else:
-        return "Middle game"
+        return "midgame"
 
 def count_moves(board):
     """

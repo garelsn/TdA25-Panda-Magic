@@ -37,6 +37,10 @@ flask --app app/app.py run
 
 Aplikace bude přístupná na `http://127.0.0.1:5000`
 
+### Tailwind
+
+npx tailwindcss -i ./src/index.css -o ./src/output.css --watch
+
 ### Docker
 
 #### Prerekvizity

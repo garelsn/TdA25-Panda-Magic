@@ -8,11 +8,9 @@ type BoardProps = {
 const Board: React.FC<BoardProps> = ({ board, onCellClick }) => {
     return (
         <div
+            className="grid gap-0 "
             style={{
-                display: "grid",
-                gridTemplateColumns: `repeat(${board[0]?.length || 0}, 1fr)`, // Počet sloupců odpovídá délce řádku
-                gridGap: "2px", // Mezery mezi buňkami
-                width: "100%",
+                gridTemplateColumns: "repeat(15, minmax(0, 1fr))",
             }}
         >
             {board.map((row, rowIndex) =>

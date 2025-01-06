@@ -24,8 +24,9 @@ def count_moves(board):
 def checkWin(board):
     if HorizontalWin(board) or VerticalWin(board) or DiagonalWinLeftToRight(board) or DiagonalWinRightToLeft(board):
         return True
-    
-    return False
+    else:
+        return False
+
 
 
 def HorizontalWin(board):
@@ -36,7 +37,9 @@ def HorizontalWin(board):
             if board[row][col] == board[row][col + 1] == board[row][col + 2] == board[row][col + 3]:
                 if board[row][col] in {"X", "O"}:
                     # Zkontroluj předchozí a následující pozici
-                    if (col > 0 and board[row][col - 1] in {"", " "}) or (col + 4 < cols and board[row][col + 4] in {"", " "}):
+                    left_open = col == 0 or board[row][col - 1] in {"", " "}
+                    right_open = col + 4 == cols or board[row][col + 4] in {"", " "}
+                    if left_open and right_open:
                         return True
     return False   
  
@@ -48,7 +51,7 @@ def VerticalWin(board):
             if board[row][col] == board[row + 1][col] == board[row + 2][col] == board[row + 3][col]:
                 if board[row][col] in {"X", "O"}:
                     # Zkontroluj horní a dolní pozici
-                    if (row > 0 and board[row - 1][col] in {"", " "}) or (row + 4 < rows and board[row + 4][col] in {"", " "}):
+                    if (row > 0 and board[row - 1][col] in {"", " "}) and (row + 4 < rows and board[row + 4][col] in {"", " "}):
                         return True
     return False
 
@@ -60,7 +63,7 @@ def DiagonalWinLeftToRight(board):
             if board[row][col] == board[row + 1][col + 1] == board[row + 2][col + 2] == board[row + 3][col + 3]:
                 if board[row][col] in {"X", "O"}:
                     # Zkontroluj předchozí a následující pozici
-                    if (row > 0 and col > 0 and board[row - 1][col - 1] in {"", " "}) or (row + 4 < rows and col + 4 < cols and board[row + 4][col + 4] in {"", " "}):
+                    if (row > 0 and col > 0 and board[row - 1][col - 1] in {"", " "}) and (row + 4 < rows and col + 4 < cols and board[row + 4][col + 4] in {"", " "}):
                         return True
     return False
 
@@ -73,6 +76,6 @@ def DiagonalWinRightToLeft(board):
             if board[row][col] == board[row + 1][col - 1] == board[row + 2][col - 2] == board[row + 3][col - 3]:
                 if board[row][col] in {"X", "O"}:
                     # Zkontroluj předchozí a následující pozici
-                     if (row > 0 and col < cols - 1 and board[row - 1][col + 1] in {"", " "}) or (row + 4 < rows and col - 4 >= 0 and board[row + 4][col - 4] in {"", " "}):
+                     if (row > 0 and col < cols - 1 and board[row - 1][col + 1] in {"", " "}) and (row + 4 < rows and col - 4 >= 0 and board[row + 4][col - 4] in {"", " "}):
                         return True
     return False

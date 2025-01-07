@@ -51,7 +51,11 @@ def VerticalWin(board):
             if board[row][col] == board[row + 1][col] == board[row + 2][col] == board[row + 3][col]:
                 if board[row][col] in {"X", "O"}:
                     # Zkontroluj horní a dolní pozici
-                    if (row > 0 and board[row - 1][col] in {"", " "}) and (row + 4 < rows and board[row + 4][col] in {"", " "}):
+                    above_empty = row > 0 and board[row - 1][col] == ""
+                    below_empty = row + 4 < rows and board[row + 4][col] == ""
+
+                    # Pokud jsou obě strany volné, vrať True
+                    if above_empty and below_empty:
                         return True
     return False
 

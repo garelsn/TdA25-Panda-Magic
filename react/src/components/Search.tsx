@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-
+import TaskFilter from "./TaskFilter";
 const Search: React.FC = () => {
+  
   const [data, setData] = useState<any[]>([]); // Všechny položky z API
   const [visibleData, setVisibleData] = useState<any[]>([]); // Aktuálně zobrazené položky
   const [error, setError] = useState<string | null>(null);
@@ -60,13 +61,8 @@ const Search: React.FC = () => {
 
   return (
     <div>
-      <h1>Games:</h1>
-      {visibleData.map((game, index) => (
-        <div 
-        key={index}
-        className={`w-32 h-32 bg-red-500 text-green-500 `}
-        >{game.name}</div>
-      ))}
+      <TaskFilter tasks={visibleData}/>
+    
     </div>
   );
 };

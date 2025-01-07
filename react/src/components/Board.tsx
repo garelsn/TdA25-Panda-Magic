@@ -8,27 +8,18 @@ type BoardProps = {
 const Board: React.FC<BoardProps> = ({ board, onCellClick }) => {
     return (
         <div
-            className="grid gap-0 "
-            style={{
-                gridTemplateColumns: "repeat(15, minmax(0, 1fr))",
-            }}
+            className="grid grid-cols-15 gap-0 w-fit" // Zajišťuje správné rozložení do 15 sloupců a šířku podle obsahu
         >
             {board.map((row, rowIndex) =>
                 row.map((cell, colIndex) => (
                     <div
                         onClick={() => onCellClick(rowIndex, colIndex)}
                         key={`${rowIndex}-${colIndex}`}
-                        style={{
-                            width: "30px",
-                            height: "30px",
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            border: "1px solid black",
-                            cursor: "pointer",
-                            backgroundColor:
-                                cell === "X" ? "#f0f8ff" : cell === "O" ? "#ffe4e1" : "white",
-                        }}
+                        className={`
+                            w-8 h-8 flex items-center justify-center 
+                            border border-black cursor-pointer 
+                            ${cell === "X" ? "bg-blue-100" : cell === "O" ? "bg-red-100" : "bg-white"}
+                        `}
                     >
                         {cell}
                     </div>

@@ -36,12 +36,15 @@ def HorizontalWin(board):
             # Zkontroluj, jestli jsou 4 za sebou stejné
             if board[row][col] == board[row][col + 1] == board[row][col + 2] == board[row][col + 3]:
                 if board[row][col] in {"X", "O"}:
-                    # Zkontroluj předchozí a následující pozici
-                    left_open = col == 0 or board[row][col - 1] in {"", " "}
-                    right_open = col + 4 == cols or board[row][col + 4] in {"", " "}
+                    # Zkontroluj vlevo a vpravo
+                    left_open = col > 0 and board[row][col - 1] == ""
+                    right_open = col + 4 < cols and board[row][col + 4] == ""
+
+                    # Pokud jsou obě strany volné, vrať True
                     if left_open and right_open:
                         return True
-    return False   
+    return False
+
  
 def VerticalWin(board):
     rows, cols = len(board), len(board[0])
@@ -66,10 +69,17 @@ def DiagonalWinLeftToRight(board):
             # Zkontroluj, jestli jsou 4 za sebou stejné diagonálně zleva doprava
             if board[row][col] == board[row + 1][col + 1] == board[row + 2][col + 2] == board[row + 3][col + 3]:
                 if board[row][col] in {"X", "O"}:
-                    # Zkontroluj předchozí a následující pozici
-                    if (row > 0 and col > 0 and board[row - 1][col - 1] in {"", " "}) and (row + 4 < rows and col + 4 < cols and board[row + 4][col + 4] in {"", " "}):
+                    # Zkontroluj levý horní roh (před sekvencí)
+                    left_open = row > 0 and col > 0 and board[row - 1][col - 1] == ""
+
+                    # Zkontroluj pravý dolní roh (za sekvencí)
+                    right_open = row + 4 < rows and col + 4 < cols and board[row + 4][col + 4] == ""
+
+                    # Pokud jsou obě strany volné, vrať True
+                    if left_open and right_open:
                         return True
     return False
+
 
 
 def DiagonalWinRightToLeft(board):
@@ -79,7 +89,14 @@ def DiagonalWinRightToLeft(board):
             # Zkontroluj, jestli jsou 4 za sebou stejné diagonálně zprava doleva
             if board[row][col] == board[row + 1][col - 1] == board[row + 2][col - 2] == board[row + 3][col - 3]:
                 if board[row][col] in {"X", "O"}:
-                    # Zkontroluj předchozí a následující pozici
-                     if (row > 0 and col < cols - 1 and board[row - 1][col + 1] in {"", " "}) and (row + 4 < rows and col - 4 >= 0 and board[row + 4][col - 4] in {"", " "}):
+                    # Zkontroluj pravý horní roh (před sekvencí)
+                    right_open = row > 0 and col < cols and board[row - 1][col + 1] == ""
+
+                    # Zkontroluj levý dolní roh (za sekvencí)
+                    left_open = row + 4 < rows and col - 4 >= 0 and board[row + 4][col - 4] == ""
+
+                    # Pokud jsou obě strany volné, vrať True
+                    if right_open and left_open:
                         return True
     return False
+

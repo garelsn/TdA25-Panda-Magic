@@ -46,10 +46,19 @@ const TaskFilter: React.FC<{ tasks: Task[] }> = ({ tasks }) => {
 
     return (
         <div className="p-4">
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4 w-96">
+                 {/* Vyhledávání podle názvu */}
+                 <input
+                    type="text"
+                    placeholder="Hledat podle názvu..."
+                    className="p-2 border rounded"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                />
+
                 {/* Filtr podle obtížnosti */}
                 <select
-                    className="p-2 border rounded"
+                    className="p-2 border rounded w-44"
                     value={difficulty || ""}
                     onChange={(e) => setDifficulty(e.target.value || null)}
                 >
@@ -59,18 +68,11 @@ const TaskFilter: React.FC<{ tasks: Task[] }> = ({ tasks }) => {
                     <option value="hard">Hard</option>
                 </select>
 
-                {/* Vyhledávání podle názvu */}
-                <input
-                    type="text"
-                    placeholder="Hledat podle názvu..."
-                    className="p-2 border rounded"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                />
+    
 
                 {/* Filtr podle data */}
                 <select
-                    className="p-2 border rounded"
+                    className="p-2 border rounded w-40"
                     value={dateFilter || ""}
                     onChange={(e) => setDateFilter(e.target.value || null)}
                 >
@@ -82,7 +84,7 @@ const TaskFilter: React.FC<{ tasks: Task[] }> = ({ tasks }) => {
                 </select>
             </div>
 
-            {/* Výsledky */}
+        {/* Výsledky */}
             <div className="mt-4">
                 {filteredTasks.length ? (
                     <ul className="space-y-2">
@@ -101,6 +103,7 @@ const TaskFilter: React.FC<{ tasks: Task[] }> = ({ tasks }) => {
                 )}
             </div>
         </div>
+        
     );
 };
 

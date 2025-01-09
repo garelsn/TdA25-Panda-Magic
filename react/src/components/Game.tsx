@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Board from "./Board";
 import SaveForm from "./SaveForm";
+import BannerSm from "./BannerSm";
 function Game(props:any) {
 
 
@@ -26,7 +27,8 @@ const handleCellClick = (row: number, col: number) => {
   setCurrentPlayer(currentPlayer === "X" ? "O" : "X");
 };
   return (
-    <div>
+    <div className="h-screen">
+      <BannerSm title="Nová hra"/>
       <SaveForm board={board}/>
       <p>Na tahu: {currentPlayer}</p>
       <Board board={board} onCellClick={handleCellClick}/>

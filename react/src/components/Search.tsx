@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import TaskFilter from "./TaskFilter";
+import BannerSm from "./BannerSm";
 const Search: React.FC = () => {
   
   const [data, setData] = useState<any[]>([]); // Všechny položky z API
@@ -60,7 +61,8 @@ const Search: React.FC = () => {
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <div>
+    <div className="h-screen">
+      <BannerSm title="Seznam her"/>
       <TaskFilter tasks={visibleData}/>
     
     </div>

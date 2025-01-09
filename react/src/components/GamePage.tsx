@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import Board from "./Board";
 import DelateButton from "./DelateButton";
 import UpdateButton from "./UpdateButton";
-
+import BannerSm from "./BannerSm";
 interface Game {
   name: string;
   board: string[][];
@@ -56,7 +56,8 @@ function GamePage() {
   };
 
   return (
-    <div>
+    <div className="h-screen">
+      <BannerSm title="Hra" />
       <DelateButton />
       <UpdateButton board={board} />
       <h1>{game.name}</h1>

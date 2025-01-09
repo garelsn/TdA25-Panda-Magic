@@ -46,19 +46,19 @@ const TaskFilter: React.FC<{ tasks: Task[] }> = ({ tasks }) => {
 
     return (
         <div className="p-4">
-            <div className="flex flex-col gap-4 w-96">
+            <div className="grid md:grid-cols-3 gap-4 md:justify-items-center w-full mb-12">
                  {/* Vyhledávání podle názvu */}
                  <input
                     type="text"
                     placeholder="Hledat podle názvu..."
-                    className="p-2 border rounded"
+                    className="p-2 border rounded w-full"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                 />
 
                 {/* Filtr podle obtížnosti */}
                 <select
-                    className="p-2 border rounded w-44"
+                    className="p-2 border rounded w-2/3"
                     value={difficulty || ""}
                     onChange={(e) => setDifficulty(e.target.value || null)}
                 >
@@ -72,7 +72,7 @@ const TaskFilter: React.FC<{ tasks: Task[] }> = ({ tasks }) => {
 
                 {/* Filtr podle data */}
                 <select
-                    className="p-2 border rounded w-40"
+                    className="p-2 border rounded w-2/3"
                     value={dateFilter || ""}
                     onChange={(e) => setDateFilter(e.target.value || null)}
                 >
@@ -87,9 +87,9 @@ const TaskFilter: React.FC<{ tasks: Task[] }> = ({ tasks }) => {
         {/* Výsledky */}
             <div className="mt-4">
                 {filteredTasks.length ? (
-                    <ul className="space-y-2">
+                    <ul className="grid md:grid-cols-2  gap-6 justify-items-stretch"> 
                         {filteredTasks.map((task) => (
-                            <li key={task.uuid} className="p-2 border rounded">
+                            <li key={task.uuid} className="p-2 border rounded bg-[#F6F6F6] w-full shadow-lg">
                                 <div>Název: {task.name}</div>
                                 <div>Obtížnost: {task.difficulty}</div>
                                 <div>Poslední úprava: {new Date(task.updatedAt).toLocaleDateString()}</div>

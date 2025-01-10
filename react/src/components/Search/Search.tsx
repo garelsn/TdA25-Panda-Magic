@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import TaskFilter from "./TaskFilter";
-import BannerSm from "./BannerSm";
+import TaskFilter from "./components/TaskFilter";
+import BannerSm from "../GlobalComponents/BannerSm";
 const Search: React.FC = () => {
   
   const [data, setData] = useState<any[]>([]); // Všechny položky z API

@@ -1,15 +1,13 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import Board from "./Board";
-import DelateButton from "./DelateButton";
-import UpdateButton from "./UpdateButton";
-import BannerSm from "./BannerSm";
+import Board from "./Components/Board";
+import BannerSm from "../GlobalComponents/BannerSm";
 interface Game {
   name: string;
   board: string[][];
 }
 
-function GamePage() {
+function GamePagePlay() {
   const { uuid } = useParams(); // Získá UUID z URL
   const [game, setGame] = useState<Game | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -58,8 +56,6 @@ function GamePage() {
   return (
     <div className="h-screen">
       <BannerSm title="Hra" />
-      <DelateButton />
-      <UpdateButton board={board} />
       <h1>{game.name}</h1>
       <p>Na tahu: {currentPlayer}</p>
       <Board board={board} onCellClick={handleCellClick} />
@@ -67,4 +63,4 @@ function GamePage() {
   );
 }
 
-export default GamePage;
+export default GamePagePlay;

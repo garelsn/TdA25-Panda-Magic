@@ -1,8 +1,8 @@
 import { useState } from "react";
-import Board from "./Board";
-import SaveForm from "./SaveForm";
-import BannerSm from "./BannerSm";
-function Game(props:any) {
+import Board from "./Components/Board";
+import SaveForm from "./Components/SaveForm";
+import BannerSm from "../GlobalComponents/BannerSm";
+function FirstGame() {
 
 
 const createEmptyBoard = (rows: number, cols: number): string[][] => {
@@ -32,12 +32,10 @@ const handleCellClick = (row: number, col: number) => {
       <SaveForm board={board}/>
       <p>Na tahu: {currentPlayer}</p>
       <Board board={board} onCellClick={handleCellClick}/>
-      {
-        props.t
-      }
+
       <h1>game</h1>
     </div>
   );
 }
 
-export default Game;
+export default FirstGame;

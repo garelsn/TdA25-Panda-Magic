@@ -93,7 +93,9 @@ const TaskFilter: React.FC<{ tasks: Task[] }> = ({ tasks }) => {
                                 <div>Název: {task.name}</div>
                                 <div>Obtížnost: {task.difficulty}</div>
                                 <div>Poslední úprava: {new Date(task.updatedAt).toLocaleDateString()}</div>
-                                <Link to={`../game/${task.uuid}`} className="bg-green-600">Načíst hru</Link>
+                                <Link to={`../game/${task.uuid}`} className="bg-orange-400">Hrát hru</Link>
+                                <Link to={`../game/edit/${task.uuid}`} className="bg-green-600">Upravit hru</Link>
+                                
                             </li>
                         ))}
                     </ul>

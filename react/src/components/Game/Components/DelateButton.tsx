@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
-
+import DefaultButton from "../../GlobalComponents/DefaultButton";
 const DelateButton: React.FC = () => {
     const [isOpen, setIsOpen] = useState(false);
     const navigate = useNavigate()
@@ -38,9 +38,7 @@ const DelateButton: React.FC = () => {
         <div>
             <p>UUID hry: {uuid}</p>
             {/* Tlačítko pro otevření pop-upu */}
-            <button onClick={togglePopup} style={{ padding: "10px 20px", fontSize: "16px" }}>
-                Smazat hru
-            </button>
+            <DefaultButton onClick={togglePopup} text="Smazat hru"/>
 
             {/* Pop-up formulář */}
             {isOpen && (

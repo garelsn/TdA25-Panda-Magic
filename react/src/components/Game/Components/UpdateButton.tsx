@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
+import DefaultButton from "../../GlobalComponents/DefaultButton";
 type BoardProps = {
     board: string[][];
 };
@@ -53,9 +54,7 @@ const UpdateButton: React.FC<BoardProps> = ({ board }) => {
     return (
         <div>
             {/* Tlačítko pro otevření pop-upu */}
-            <button onClick={togglePopup} style={{ padding: "10px 20px", fontSize: "16px" }}>
-                Uložit hru
-            </button>
+            <DefaultButton onClick={togglePopup} text="Uložit hru"/>
 
             {/* Pop-up formulář */}
             {isOpen && (

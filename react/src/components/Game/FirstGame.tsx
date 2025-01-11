@@ -50,7 +50,7 @@ function FirstGame() {
           <div className="h-[60%] flex justify-center items-center">
             <SaveForm board={board} />
             <ButtonLink link="../search" name="Seznam her" />
-            <ButtonLink link="../game" name="Nová hra" />
+            <ButtonLink link="../game" name="Nová hra" onClick/>
           </div>
           <div className="h-[40%] flex justify-center items-center bg-slate-100 w-[80%] rounded-xl">
             <div className="w-1/2 flex justify-center items-center">

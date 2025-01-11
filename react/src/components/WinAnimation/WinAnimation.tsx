@@ -1,6 +1,6 @@
 import Confetti from "react-confetti";
 import { useEffect, useState } from "react";
-import Board from "../Game/Components/Board";
+
 type BoardProps = {
   board: string[][];
 };

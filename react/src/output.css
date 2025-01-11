@@ -682,6 +682,10 @@ video {
           user-select: none;
 }
 
+.resize {
+  resize: both;
+}
+
 .grid-cols-15 {
   grid-template-columns: repeat(15, minmax(0, 1fr));
 }

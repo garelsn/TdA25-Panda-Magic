@@ -2,6 +2,7 @@ import { useState } from "react";
 import Board from "./Components/Board";
 import SaveForm from "./Components/SaveForm";
 import BannerSm from "../GlobalComponents/BannerSm";
+import WinAnimation from "../WinAnimation/WinAnimation";
 function FirstGame() {
 
 
@@ -29,6 +30,9 @@ const handleCellClick = (row: number, col: number) => {
   return (
     <div className="h-screen">
       <BannerSm title="Nová hra"/>
+
+        <WinAnimation board={board}/>
+        
       <SaveForm board={board}/>
       <p>Na tahu: {currentPlayer}</p>
       <Board board={board} onCellClick={handleCellClick}/>

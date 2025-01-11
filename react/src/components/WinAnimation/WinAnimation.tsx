@@ -1,7 +1,10 @@
 import Confetti from "react-confetti";
 import { useState } from "react";
+type BoardProps = {
+  board: string[][];
+};
 
-function WinAnimation() {
+const WinAnimation: React.FC<BoardProps> = ({ board }) => {
   // Define the type for windowSize
   const [isConfettiActive, setIsConfettiActive] = useState(false);
 

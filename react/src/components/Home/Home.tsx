@@ -1,4 +1,5 @@
 import ButtonLink from "../GlobalComponents/ButtonLink";
+import WinAnimation from "../WinAnimation/WinAnimation";
 
 function Home() {
   return (
@@ -21,6 +22,9 @@ function Home() {
           background: "linear-gradient(to bottom, #141E34 15%, #375694 85%)",
         }}
       >
+        
+        < WinAnimation/>
+        
         <ButtonLink link="game" name="Nová hra" /> <br></br>
         <ButtonLink link="search" name="Seznam her" />
       </div>

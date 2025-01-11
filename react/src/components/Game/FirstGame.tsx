@@ -2,7 +2,11 @@ import { useState } from "react";
 import Board from "./Components/Board";
 import SaveForm from "./Components/SaveForm";
 import BannerSm from "../GlobalComponents/BannerSm";
+
 import ButtonLink from "../GlobalComponents/ButtonLink";
+
+import WinAnimation from "../WinAnimation/WinAnimation";
+
 function FirstGame() {
 
 
@@ -27,6 +31,7 @@ const handleCellClick = (row: number, col: number) => {
   // Přepnutí hráče
   setCurrentPlayer(currentPlayer === "X" ? "O" : "X");
 };
+
 return (
   <div className="h-screen flex flex-col">
     <BannerSm title="Nová hra" />
@@ -52,6 +57,17 @@ return (
         </div>
       </div>
 
+
+  return (
+    <div className="h-screen">
+      <BannerSm title="Nová hra"/>
+        <WinAnimation board={board}/>
+        
+      <SaveForm board={board}/>
+      <p>Na tahu: {currentPlayer}</p>
+      <Board board={board} onCellClick={handleCellClick}/>
+
+      <h1>game</h1>
     </div>
   </div>
 );

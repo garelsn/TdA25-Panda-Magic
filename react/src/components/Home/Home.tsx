@@ -1,5 +1,9 @@
 import ButtonLink from "../GlobalComponents/ButtonLink";
+
 import { Link } from "react-router-dom";
+
+import WinAnimation from "../WinAnimation/WinAnimation";
+
 
 function Home() {
   return (
@@ -28,6 +32,7 @@ function Home() {
           background: "linear-gradient(to bottom, #141E34 15%, #375694 85%)",
         }}
       >
+
         <div className="w-full">
           <div className="flex w-[60%] justify-center mb-4">
             <img src="./zarivka_playing_bile.svg" alt="" className="w-[12%]" />
@@ -38,6 +43,13 @@ function Home() {
             <ButtonLink link="search" name="Seznam her" />
           </div>
         </div>
+
+        
+        < WinAnimation/>
+        
+        <ButtonLink link="game" name="Nová hra" /> <br></br>
+        <ButtonLink link="search" name="Seznam her" />
+
       </div>
     </div>
   );

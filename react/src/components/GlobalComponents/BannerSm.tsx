@@ -1,12 +1,12 @@
 import { Link } from "react-router-dom";
 
-function BannerSm({ title }: { title: string }) {
+function BannerSm({ title, url}: { title: string, url:string }) {
   return (
     <div className="w-full h-1/4 bg-[#1A1A1A] text-white p-2 text-center ">
       <div className="w-[25%]">
         <Link to="/">
           <img
-            src="./Think-different-Academy_LOGO_oficialni-bile.svg"
+            src={url}
             alt="Logo"
             className="w-1/2 md:w-1/2 m-6"
           />

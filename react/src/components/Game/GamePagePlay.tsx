@@ -55,7 +55,7 @@ function GamePagePlay() {
 
   return (
     <div className="h-screen">
-      <BannerSm title="Hra" />
+      <BannerSm title="Hra" url="../../Think-different-Academy_LOGO_oficialni-bile.svg"/>
       <h1>{game.name}</h1>
       <p>Na tahu: {currentPlayer}</p>
       <Board board={board} onCellClick={handleCellClick} />

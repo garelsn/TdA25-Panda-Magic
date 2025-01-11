@@ -57,7 +57,7 @@ function GamePageEdit() {
 
   return (
     <div className="h-screen">
-      <BannerSm title="Hra" />
+      <BannerSm title="Hra" url="../../Think-different-Academy_LOGO_oficialni-bile.svg" />
       <DelateButton />
       <UpdateButton board={board} />
       <h1>{game.name}</h1>

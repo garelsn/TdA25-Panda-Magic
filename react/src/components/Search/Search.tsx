@@ -62,7 +62,7 @@ const Search: React.FC = () => {
 
   return (
     <div className="h-screen relative">
-    <BannerSm title="Seznam her" />
+    <BannerSm title="Seznam her" url="../../Think-different-Academy_LOGO_oficialni-bile.svg"/>
     <TaskFilter tasks={visibleData} />
     <div
       className="h-full absolute top-0 left-0 w-full -z-10"

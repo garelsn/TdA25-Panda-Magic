@@ -35,6 +35,7 @@ const handleCellClick = (row: number, col: number) => {
 return (
   <div className="h-screen flex flex-col">
     <BannerSm title="Nová hra" />
+    <WinAnimation board={board} />
     <div
       className="h-full absolute top-0 left-0 w-full -z-10"
       style={{
@@ -50,24 +51,15 @@ return (
         <div className="h-[60%] flex justify-center items-center">
           <SaveForm board={board} />
           <ButtonLink link="../search" name="Seznam her" />
-          <ButtonLink link="../game" name="Nová hra" />
+          <ButtonLink 
+          link="../game" name="Nová hra" 
+          onClick={true}
+          />
         </div>
         <div className="h-[40%] flex justify-center items-center">
           <p className="text-white">Na tahu: {currentPlayer}</p>
         </div>
       </div>
-
-
-  return (
-    <div className="h-screen">
-      <BannerSm title="Nová hra"/>
-        <WinAnimation board={board}/>
-        
-      <SaveForm board={board}/>
-      <p>Na tahu: {currentPlayer}</p>
-      <Board board={board} onCellClick={handleCellClick}/>
-
-      <h1>game</h1>
     </div>
   </div>
 );

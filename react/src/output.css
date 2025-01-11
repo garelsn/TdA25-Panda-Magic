@@ -688,10 +688,6 @@ video {
   height: 100vh;
 }
 
-.h-12 {
-  height: 3rem;
-}
-
 .w-1\/2 {
   width: 50%;
 }
@@ -702,10 +698,6 @@ video {
 
 .w-16 {
   width: 4rem;
-}
-
-.w-24 {
-  width: 6rem;
 }
 
 .w-24 {
@@ -753,10 +745,6 @@ video {
   -webkit-user-select: none;
      -moz-user-select: none;
           user-select: none;
-}
-
-.resize {
-  resize: both;
 }
 
 .grid-cols-15 {

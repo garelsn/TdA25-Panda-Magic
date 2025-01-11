@@ -2,8 +2,6 @@ import ButtonLink from "../GlobalComponents/ButtonLink";
 
 import { Link } from "react-router-dom";
 
-import WinAnimation from "../WinAnimation/WinAnimation";
-
 
 function Home() {
   return (
@@ -44,11 +42,6 @@ function Home() {
           </div>
         </div>
 
-        
-        < WinAnimation/>
-        
-        <ButtonLink link="game" name="Nová hra" /> <br></br>
-        <ButtonLink link="search" name="Seznam her" />
 
       </div>
     </div>

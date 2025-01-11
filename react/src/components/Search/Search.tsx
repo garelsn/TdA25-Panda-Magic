@@ -61,11 +61,16 @@ const Search: React.FC = () => {
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <div className="h-screen">
-      <BannerSm title="Seznam her"/>
-      <TaskFilter tasks={visibleData}/>
-    
-    </div>
+    <div className="h-screen relative">
+    <BannerSm title="Seznam her" />
+    <TaskFilter tasks={visibleData} />
+    <div
+      className="h-full absolute top-0 left-0 w-full -z-10"
+      style={{
+        background: "linear-gradient(to bottom, #141E34 15%, #375694 85%)",
+      }}
+    ></div>
+  </div>
   );
 };
 

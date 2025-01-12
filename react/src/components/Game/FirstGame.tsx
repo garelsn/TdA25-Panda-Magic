@@ -43,7 +43,7 @@ function FirstGame() {
       ></div>
       <div className="flex w-full h-full">  
         <div className="w-1/2 flex justify-center items-center p-4">
-          <Board board={board} onCellClick={handleCellClick} />
+          <Board board={board} onCellClick={handleCellClick} x="X_cervene.svg" o="O_modre.svg"/>
         </div>
         
         <div className="w-1/2 flex flex-col items-center p-4">
@@ -52,10 +52,10 @@ function FirstGame() {
             <div className="ml-28">
               <ButtonLink link="../search" name="Seznam her"/>
             </div>
-            <ButtonLink link="../game" name="Nová hra" />
+            <ButtonLink link="../game" name="Nová hra" onClick/>
           </div>
 
-          <div className="h-[35%] flex justify-center items-center bg-slate-100 w-[50%] rounded-xl">
+          <div className="h-[25%] flex justify-center items-center bg-slate-100 w-[50%] rounded-xl">
             <div className="w-[80%] flex justify-center items-center">
               <div className="w-[55%] flex justify-center items-center bg-[#1A1A1A] p-7 rounded-md">
                 <img src="./zarivka_playing_bile.svg" alt="" className="w-full h-auto" />

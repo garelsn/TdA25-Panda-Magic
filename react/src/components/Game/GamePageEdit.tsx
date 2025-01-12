@@ -58,7 +58,7 @@ function GamePageEdit() {
 
   return (
     <div className="h-screen flex flex-col">
-      <BannerSm title="Hra" url="../../Think-different-Academy_LOGO_oficialni-bile.svg" />
+      <BannerSm title={game.name} url="../../Think-different-Academy_LOGO_oficialni-bile.svg" />
       <div
         className="h-full absolute top-0 left-0 w-full -z-10"
         style={{
@@ -67,14 +67,13 @@ function GamePageEdit() {
       ></div>
       <div className="flex w-full h-full">
         <div className="w-1/2 flex justify-center items-center p-4">
-          <Board board={board} onCellClick={handleCellClick} />
+          <Board board={board} onCellClick={handleCellClick} x="/X_cervene.svg" o="/O_modre.svg"/>
         </div>
 
         <div className="w-1/2 flex flex-col items-center p-4">
           <div className="h-[60%] flex flex-col justify-center items-center">
             <UpdateButton board={board} />
             <DelateButton />
-            <h1 className="text-white text-xl font-bold my-4">{game.name}</h1>
           </div>
 
           <div className="h-[35%] flex justify-center items-center bg-slate-100 w-[50%] rounded-xl">

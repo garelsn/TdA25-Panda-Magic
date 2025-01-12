@@ -76,7 +76,7 @@ const SaveForm: React.FC<BoardProps> = ({ board }) => {
                             minWidth: "300px",
                         }}
                     >
-                        <h2>Uložení hry</h2>
+                        <h2 className="font-bold text-center">Uložení hry</h2>
                         <form onSubmit={handleSubmit}>
                             <div style={{ marginBottom: "15px" }}>
                                 <label htmlFor="name">Jméno hry:</label>

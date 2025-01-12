@@ -4,6 +4,7 @@ import Board from "./Components/Board";
 import DelateButton from "./Components/DelateButton";
 import UpdateButton from "./Components/UpdateButton";
 import BannerSm from "../GlobalComponents/BannerSm";
+import ButtonLink from "../GlobalComponents/ButtonLink";
 
 interface Game {
   name: string;
@@ -71,8 +72,11 @@ function GamePageEdit() {
         </div>
 
         <div className="w-1/2 flex flex-col items-center p-4">
-          <div className="h-[60%] flex flex-col justify-center items-center">
+          <div className="h-[60%] flex flex-col ">
             <UpdateButton board={board} />
+            <div className="ml-16">
+              <ButtonLink link="../search" name="Seznam her" />
+            </div>
             <DelateButton />
           </div>
 

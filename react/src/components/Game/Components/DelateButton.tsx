@@ -36,7 +36,6 @@ const DelateButton: React.FC = () => {
     };
     return (
         <div>
-            <p>UUID hry: {uuid}</p>
             {/* Tlačítko pro otevření pop-upu */}
             <DefaultButton onClick={togglePopup} text="Smazat hru"/>
 
@@ -64,10 +63,11 @@ const DelateButton: React.FC = () => {
                             minWidth: "300px",
                         }}
                     >
-                        <h2>Formulář</h2>
-                            <button  onClick={deleteGame} style={{ padding: "10px 20px" }}>
-                                        Smazat hru
-                            </button>
+                        
+                        <h2>Opravdu si přejete smazat hru?</h2>
+                        <div style={{ marginBottom: "15px" }}>
+                        </div>
+                        <div style={{ display: "flex", justifyContent: "space-between" }}>
                             <button
                                 type="button"
                                 onClick={togglePopup}
@@ -82,6 +82,10 @@ const DelateButton: React.FC = () => {
                                 >
                                 Zavřít
                             </button>
+                            <button  onClick={deleteGame} style={{ padding: "10px 20px" }}>
+                                        Smazat hru
+                            </button>
+                            </div>
                     </div>
                 </div>
             )}

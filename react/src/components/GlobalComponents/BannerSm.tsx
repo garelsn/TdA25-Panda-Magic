@@ -7,7 +7,7 @@ function BannerSm({ title, url}: { title: string, url:string }) {
           <img
             src={url}
             alt="Logo"
-            className="w-1/2 m-6 md:w-[80%]"
+            className="w-1/2 m-6 md:w-[80%] lg:w-[40%]"
           />
         </Link>
       <div className=" flex justify-center items-center lg:mb-0 mb-14">

@@ -133,13 +133,6 @@ function FirstGame() {
               </div>
             </div>
           </div>
-
-          {/* Zobrazení vítěze */}
-          {isGameOver && winner && (
-            <div className="mt-4 text-xl text-green-600 font-bold">
-              Vyhrál hráč {winner === "X" ? "X" : "O"}!
-            </div>
-          )}
         </div>
       </div>
     </div>

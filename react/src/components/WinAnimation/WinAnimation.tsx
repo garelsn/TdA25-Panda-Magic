@@ -1,35 +1,45 @@
 import Confetti from "react-confetti";
 import { useEffect, useState } from "react";
+import ButtonLink from "../GlobalComponents/ButtonLink";
 
 type BoardProps = {
   board: string[][];
   setIsGameOver: React.Dispatch<React.SetStateAction<boolean>>;
-  setWinner: React.Dispatch<React.SetStateAction<"X" | "O" | null>>; // Přidáme setWinner pro předání vítěze
+  setWinner: React.Dispatch<React.SetStateAction<"X" | "O" | null>>;
 };
 
 const WinAnimation: React.FC<BoardProps> = ({ board, setIsGameOver, setWinner }) => {
   const [isConfettiActive, setIsConfettiActive] = useState(false);
-  const [windowSize, setWindowSize] = useState<{ width: number | undefined, height: number | undefined }>({
+  const [windowSize, setWindowSize] = useState<{ width: number | undefined; height: number | undefined }>({
     width: undefined,
-    height: undefined
+    height: undefined,
   });
+  const [modalVisible, setModalVisible] = useState(false);
+  const [winner, setWinnerState] = useState<"X" | "O" | null>(null);
+
+  useEffect(() => {
+    setWindowSize({
+      width: window.innerWidth,
+      height: window.innerHeight,
+    });
+
+    if (!isConfettiActive) {
+      window.onresize = null;
+    }
+  }, [isConfettiActive]);
 
   function handleWindowSizeChange() {
     setWindowSize({
       width: window.innerWidth,
-      height: window.innerHeight
+      height: window.innerHeight,
     });
   }
 
-  useEffect(() => {
-    if (!isConfettiActive) {
-      window.onresize = null; // clearing the onresize event listener
-    }
-  }, [isConfettiActive]);
-
-  function fireConfetti() {
-    window.onresize = () => { handleWindowSizeChange(); }
+  function fireConfetti(winner: "X" | "O") {
+    window.onresize = handleWindowSizeChange;
     setIsConfettiActive(true);
+    setModalVisible(true);
+    setWinnerState(winner);
   }
 
   function searchForWin() {
@@ -38,20 +48,40 @@ const WinAnimation: React.FC<BoardProps> = ({ board, setIsGameOver, setWinner })
     }
 
     const searchPatterns: Map<string, number[][]> = new Map<string, number[][]>([
-      ['horizontalSet', [[-2, 0], [-1, 0], [1, 0], [2, 0]]],
-      ['verticalSet', [[0, -2], [0, -1], [0, 1], [0, 2]]],
-      ['diagonalSet', [[-2, -2], [-1, -1], [1, 1], [2, 2]]],
-      ['antiDiagonalSet', [[2, -2], [1, -1], [-1, 1], [-2, 2]]]
+      ["horizontalSet", [
+        [-2, 0],
+        [-1, 0],
+        [1, 0],
+        [2, 0],
+      ]],
+      ["verticalSet", [
+        [0, -2],
+        [0, -1],
+        [0, 1],
+        [0, 2],
+      ]],
+      ["diagonalSet", [
+        [-2, -2],
+        [-1, -1],
+        [1, 1],
+        [2, 2],
+      ]],
+      ["antiDiagonalSet", [
+        [2, -2],
+        [1, -1],
+        [-1, 1],
+        [-2, 2],
+      ]],
     ]);
 
     function searchByPattern(pattern: number[][], position: number[]): boolean {
-      var symbolToMatch = board[position[0]][position[1]];
+      const symbolToMatch = board[position[0]][position[1]];
 
-      if (symbolToMatch == '') {
+      if (symbolToMatch === "") {
         return false;
       }
 
-      for (var modifier of pattern) {
+      for (const modifier of pattern) {
         try {
           if (board[position[0] + modifier[0]][position[1] + modifier[1]] !== symbolToMatch) {
             return false;
@@ -66,11 +96,12 @@ const WinAnimation: React.FC<BoardProps> = ({ board, setIsGameOver, setWinner })
 
     for (let y = 0; y < board.length; y++) {
       for (let x = 0; x < board[y].length; x++) {
-        for (let searchPatternKey of searchPatterns) {
-          if (searchByPattern(searchPatternKey[1] as number[][], [y, x])) {
-            fireConfetti();
-            setWinner(board[y][x] === "X" ? "X" : "O"); // Nastavení vítěze
-            setIsGameOver(true); // Ukončení hry
+        for (const searchPatternKey of searchPatterns) {
+          if (searchByPattern(searchPatternKey[1], [y, x])) {
+            const winner = board[y][x] === "X" ? "X" : "O";
+            fireConfetti(winner);
+            setWinner(winner);
+            setIsGameOver(true);
             return;
           }
         }
@@ -78,15 +109,36 @@ const WinAnimation: React.FC<BoardProps> = ({ board, setIsGameOver, setWinner })
     }
   }
 
-  if (board != null) {
-    searchForWin();
-  }
+  useEffect(() => {
+    if (board) {
+      searchForWin();
+    }
+  }, [board]);
 
   return (
-    <div className="">
-      {isConfettiActive && <Confetti width={windowSize.width} height={windowSize.height} />}
-    </div>
+    <>
+      {modalVisible && winner && (
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50">
+          <div className="bg-white text-center p-8 rounded-lg shadow-lg relative md:w-[40%] md:h-[20%] lg:w-[30%] lg:h-[20%] flex flex-col md:flex-row items-center justify-center">
+  <h2 className="text-3xl font-bold text-gray-800 md:text-5xl">
+    Vyhrál hráč
+  </h2>
+  <span className="inline-block w-12 h-12 ml-0 mt-4 md:ml-2 md:mt-0">
+    <img
+      src={winner === "X" ? "../../X_cervene.svg" : "../../O_modre.svg"}
+      alt={`Hráč ${winner}`}
+      className="w-full h-full"
+    />
+  </span>
+      <ButtonLink link="/" name="Restartovat hru" onClick />
+
+</div>
+
+          {isConfettiActive && <Confetti width={windowSize.width} height={windowSize.height} />}
+        </div>
+      )}
+    </>
   );
-}
+};
 
 export default WinAnimation;

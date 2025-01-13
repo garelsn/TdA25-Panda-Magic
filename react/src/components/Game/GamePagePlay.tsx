@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import Board from "./Components/Board";
 import BannerSm from "../GlobalComponents/BannerSm";
-import SaveForm from "./Components/SaveForm";
+import WinAnimation from "../WinAnimation/WinAnimation";
 import ButtonLink from "../GlobalComponents/ButtonLink";
 
 interface Game {
@@ -20,6 +20,8 @@ function GamePagePlay() {
     src: "../../zarivka_playing_bile.svg",
     text: "Hraje se...",
   });
+  const [isGameOver, setIsGameOver] = useState(false);
+  const [winner, setWinner] = useState<"X" | "O" | null>(null);
   const baseUrl = import.meta.env.VITE_REACT_APP_API_BASE_URL || "";
 
   useEffect(() => {
@@ -86,11 +88,12 @@ function GamePagePlay() {
         title={game.name}
         url="../../Think-different-Academy_LOGO_oficialni-bile.svg"
       />
+      
       <div
         className="h-full absolute top-0 left-0 w-full -z-10"
         style={{ background: "linear-gradient(to bottom, #141E34 15%, #375694 85%)" }}
       ></div>
-
+    <WinAnimation board={board} setIsGameOver={setIsGameOver} setWinner={setWinner} />
       <div className="flex flex-col lg:flex-row w-full h-full">
         <div className="w-full flex justify-center items-center p-4">
           <Board

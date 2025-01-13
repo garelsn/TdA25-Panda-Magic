@@ -83,11 +83,6 @@ function FirstGame() {
             <img src={imageAndText.src} alt="Dynamický obrázek" className="w-20 h-20 mb-2 bg-[#1A1A1A] rounded-lg" />
             {playerIndicator}
           </div>
-          {isGameOver && winner && (
-            <div className="mt-4 text-xl text-green-600 font-bold">
-              Vyhrál hráč {winner}!
-            </div>
-          )}
         </div>
       </div>
     </div>

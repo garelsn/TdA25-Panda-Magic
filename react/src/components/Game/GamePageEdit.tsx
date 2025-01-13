@@ -68,7 +68,7 @@ function GamePageEdit() {
       ></div>
       <div className="flex w-full h-full">
         <div className="w-1/2 flex justify-center items-center p-4">
-          <Board board={board} onCellClick={handleCellClick} x="/X_cervene.svg" o="/O_modre.svg"/>
+          <Board board={board} onCellClick={handleCellClick} x="/X_cervene.svg" o="/O_modre.svg" currentPlayer={currentPlayer}/>
         </div>
 
         <div className="w-1/2 flex flex-col items-center p-4">

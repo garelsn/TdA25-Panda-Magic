@@ -14,7 +14,7 @@ function Home() {
             className="w-1/2 md:w-[50%] m-6 lg:w-[20%]"
           />
         </Link>
-        <h1 className="text-white md:text-7xl lg:text-8xl font-bold flex items-center justify-center text-6xl md:mt-28">
+        <h1 className="text-white md:text-7xl lg:text-8xl font-bold flex items-center justify-center text-6xl md:mt-25">
           Piškv
           <img
             src="/O_modre.svg"
@@ -30,7 +30,9 @@ function Home() {
           background: "linear-gradient(to bottom, #141E34 15%, #375694 85%)",
         }}
       >
-
+        <div className=" hidden lg:z-10 lg:block lg:absolute lg:mb-[20%] lg:right-[5%]">
+          <img src="/game_array_play.svg" alt="Herní pole" className="lg:w-[70%] lg:h-[70%] "/>
+        </div>
         <div className="w-screen mt-14 lg:mt-0 md:pl-[25%] xl:pl-[5%]">
           <div className="flex md:w-[70%] lg:w-[60%] justify-center mb-4">
             <img src="./zarivka_playing_bile.svg" alt="" className=" w-20 md:w-36 lg:w-[12%]" />

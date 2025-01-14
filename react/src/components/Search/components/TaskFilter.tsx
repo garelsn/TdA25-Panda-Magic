@@ -108,7 +108,7 @@ const TaskFilter: React.FC<{ tasks: Task[] }> = ({ tasks }) => {
                     </ul>
                 ) : (
                     <div className="mt-20">
-                        <div className="text-white flex justify-center font-bold text-6xl p-3">
+                        <div className="text-white flex justify-center text-center font-bold text-6xl p-3">
                             <p>Žádné úlohy neodpovídají zadaným filtrům.</p>
                         </div>
                             <img src="./duck.svg" alt="Kačenka" className="w-1/6 mx-auto mt-4"/>

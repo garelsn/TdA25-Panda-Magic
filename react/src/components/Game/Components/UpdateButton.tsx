@@ -80,7 +80,7 @@ const UpdateButton: React.FC<BoardProps> = ({ board }) => {
                             minWidth: "300px",
                         }}
                     >
-                        <h2>Formulář</h2>
+                        <h2 className="font-bold text-center">Uložení hry</h2>
                         <form onSubmit={handleSubmit}>
                             <div style={{ marginBottom: "15px" }}>
                                 <label htmlFor="name">Jméno hry:</label>
@@ -104,15 +104,12 @@ const UpdateButton: React.FC<BoardProps> = ({ board }) => {
                             <div style={{ marginBottom: "15px" }}>
                             </div>
                             <div style={{ display: "flex", justifyContent: "space-between" }}>
-                                <button type="submit" style={{ padding: "10px 20px" }}>
-                                    Uložit hru
-                                </button>
                                 <button
                                     type="button"
                                     onClick={togglePopup}
                                     style={{
                                         padding: "10px 20px",
-                                        backgroundColor: "#f44336",
+                                        backgroundColor: "#E31837",
                                         color: "white",
                                         border: "none",
                                         borderRadius: "4px",
@@ -120,6 +117,9 @@ const UpdateButton: React.FC<BoardProps> = ({ board }) => {
                                     }}
                                 >
                                     Zavřít
+                                </button>
+                                <button type="submit" style={{ padding: "10px 20px" }}>
+                                    Uložit hru
                                 </button>
                             </div>
                         </form>

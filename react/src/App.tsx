@@ -4,6 +4,7 @@ import GamePagePlay from "./components/Game/GamePagePlay"
 import FirstGame from "./components/Game/FirstGame"
 import Home from "./components/Home/Home"
 import Search from "./components/Search/Search";
+
 function App() {
   return (
     <Router>

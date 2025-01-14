@@ -25,7 +25,7 @@ function Home() {
         </h1>
       </div>
       <div
-        className="h-2/5 flex flex-col items-center justify-center"
+        className="h-[50vh] md:h-2/5 flex flex-col items-center justify-center"
         style={{
           background: "linear-gradient(to bottom, #141E34 15%, #375694 85%)",
         }}

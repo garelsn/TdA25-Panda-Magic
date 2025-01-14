@@ -25,6 +25,8 @@ function GamePageEdit() {
   });
   const [isGameOver, setIsGameOver] = useState(false);
   const [winner, setWinner] = useState<"X" | "O" | null>(null);
+  console.log(isGameOver)
+  console.log(winner)
   useEffect(() => {
     const fetchGame = async () => {
       try {

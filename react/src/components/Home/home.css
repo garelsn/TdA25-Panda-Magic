@@ -1,29 +1,29 @@
 @keyframes circle-one {
-   0% {
-    top: 5%;
-    left: 90%;
-   }
-   20% {
-    top: 7%;
-    left: 92%
-   }
-   40% {
-    top: 5%;
-    left: 88%
-   }
-   60% {
-    top: 3%;
-    left: 86%
-   }
-   80% {
-    top: 5%;
-    left: 88%
-   }
-   100% {
-    top: 5%;
-    left: 90%;
-   }
- }
+	0% {
+		top: 9%;
+		left: 79%
+	}
+	20% {
+		top: 9%;
+		left: 89%
+	}
+	40% {
+		top: 10%;
+		left: 82%
+	}
+	60% {
+		top: 14%;
+		left: 85%
+	}
+	80% {
+		top: 11%;
+		left: 88%
+	}
+	100% {
+		top: 9%;
+		left: 79%
+	}
+}
 
 .circle-one {
   position: absolute;
@@ -31,5 +31,84 @@
   left: 90%;
   width: 7vw; 
   height: 7vw; 
-  animation: circle-one 5s ease-in-out infinite;
+  animation: circle-one 30s ease-in-out infinite;
+  z-index: 0;
+}
+
+@keyframes cross-one {
+	0% {
+		top: 14%;
+		left: 15%
+	}
+	14% {
+		top: 15%;
+		left: 21%
+	}
+	29% {
+		top: 21%;
+		left: 22%
+	}
+	43% {
+		top: 23%;
+		left: 17%
+	}
+	57% {
+		top: 16%;
+		left: 13%
+	}
+	71% {
+		top: 13%;
+		left: 15%
+	}
+	86% {
+		top: 18%;
+		left: 17%
+	}
+	100% {
+		top: 14%;
+		left: 15%
+	}
+}
+
+.cross-one {
+    position: absolute;
+    top: 15%;
+    left: 16%;
+    width: 12vw;
+    height: 12vw;
+    animation: cross-one 30s ease-in-out infinite;
+    z-index: 0;
+}
+
+@keyframes cross-two {
+	0% {
+		top: 34%;
+		left: 65%
+	}
+	25% {
+		top: 36%;
+		left: 53%
+	}
+	50% {
+		top: 27%;
+		left: 62%
+	}
+	75% {
+		top: 34%;
+		left: 67%
+	}
+	100% {
+		top: 34%;
+		left: 65%
+	}
+}
+
+.cross-two {
+    position: absolute;
+    top: 15%;
+    left: 16%;
+    width: 17vw;
+    height: 17vw;
+    animation: cross-two 30s ease-in-out infinite;
+    z-index: 0;
 }

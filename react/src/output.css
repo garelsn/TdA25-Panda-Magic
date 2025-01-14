@@ -1286,12 +1286,6 @@ p {
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
-@media (min-width: 640px) {
-  .sm\:hidden {
-    display: none;
-  }
-}
-
 @media (min-width: 768px) {
   .md\:right-6 {
     right: 1.5rem;
@@ -1312,10 +1306,6 @@ p {
 
   .md\:mt-0 {
     margin-top: 0px;
-  }
-
-  .md\:mt-28 {
-    margin-top: 7rem;
   }
 
   .md\:mt-9 {
@@ -1410,8 +1400,8 @@ p {
     right: 1rem;
   }
 
-  .lg\:right-\[5\%\] {
-    right: 5%;
+  .lg\:right-\[1\%\] {
+    right: 1%;
   }
 
   .lg\:z-10 {
@@ -1483,10 +1473,6 @@ p {
     height: 20%;
   }
 
-  .lg\:h-\[80\%\] {
-    height: 80%;
-  }
-
   .lg\:h-\[70\%\] {
     height: 70%;
   }
@@ -1521,10 +1507,6 @@ p {
 
   .lg\:w-\[60\%\] {
     width: 60%;
-  }
-
-  .lg\:w-\[80\%\] {
-    width: 80%;
   }
 
   .lg\:w-\[70\%\] {
@@ -1563,6 +1545,10 @@ p {
 }
 
 @media (min-width: 1280px) {
+  .xl\:right-\[5\%\] {
+    right: 5%;
+  }
+
   .xl\:pl-\[5\%\] {
     padding-left: 5%;
   }

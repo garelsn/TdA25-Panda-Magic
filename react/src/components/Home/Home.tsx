@@ -30,7 +30,7 @@ function Home() {
           background: "linear-gradient(to bottom, #141E34 15%, #375694 85%)",
         }}
       >
-        <div className=" hidden lg:z-10 lg:block lg:absolute lg:mb-[20%] lg:right-[5%]">
+        <div className=" hidden lg:z-10 lg:block lg:absolute lg:mb-[20%] lg:right-[1%] xl:right-[5%]">
           <img src="/game_array_play.svg" alt="Herní pole" className="lg:w-[70%] lg:h-[70%] "/>
         </div>
         <div className="w-screen mt-14 lg:mt-0 md:pl-[25%] xl:pl-[5%]">

@@ -1,6 +1,6 @@
 import Confetti from "react-confetti";
 import { useEffect, useState } from "react";
-import ButtonLink from "../GlobalComponents/ButtonLink";
+
 
 type BoardProps = {
   board: string[][];

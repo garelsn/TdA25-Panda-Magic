@@ -17,6 +17,7 @@ function FirstGame() {
   });
   const [isGameOver, setIsGameOver] = useState(false);
   const [winner, setWinner] = useState<"X" | "O" | null>(null);
+  console.log(winner)
 
   useEffect(() => {
     if (!isGameOver) {

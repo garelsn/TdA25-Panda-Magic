@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, send_from_directory
 
 
 
@@ -16,11 +16,11 @@ from .gameLogic import game_status
 
 from ast import literal_eval
 
-from flask_cors import CORS
+# from flask_cors import CORS
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static/react', template_folder='templates')
 
-CORS(app)
+# CORS(app)
 
 
 app.config.from_mapping(
@@ -38,21 +38,33 @@ db.init_app(app)
 
 @app.route('/')
 def hello_world():  # put application's code here
-    return render_template("index.html")  # Vrátí HTML soubor z templates
+     return send_from_directory(app.static_folder, 'index.html') # Vrátí HTML soubor z templates
     # return "Hello TdA 🐼 Magic "
 
 @app.route('/game')
 def gammme():  # put application's code here
-    return render_template("index.html")  # Vrátí HTML soubor z templates
+    return send_from_directory(app.static_folder, 'index.html') # Vrátí HTML soubor z templates
     # return "Hello TdA 🐼 Magic "
 
+@app.route('/search')
+def gameSearch():  # put application's code here
+     return send_from_directory(app.static_folder, 'index.html')  # Vrátí HTML soubor z templates
+    # return "Hello TdA 🐼 Magic "
+
+@app.route('/game/edit/<string:uuid>')
+def gameEditUUID(uuid):  # put application's code here
+     return send_from_directory(app.static_folder, 'index.html')  # Vrátí HTML soubor z templates
+    # return "Hello TdA 🐼 Magic "
 
 @app.route('/game/<string:uuid>')
 def gameUUID(uuid):  # put application's code here
-    return render_template("index.html")  # Vrátí HTML soubor z templates
+     return send_from_directory(app.static_folder, 'index.html')  # Vrátí HTML soubor z templates
     # return "Hello TdA 🐼 Magic "
 
-    
+@app.route('/<path:path>')
+def serve_static_files(path):
+    return send_from_directory(app.static_folder, path)
+
 
 @app.route('/api', methods=['GET'])
 def api(): 

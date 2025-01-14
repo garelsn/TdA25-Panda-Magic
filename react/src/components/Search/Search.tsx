@@ -8,14 +8,15 @@ const Search: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
-  const baseUrl = import.meta.env.VITE_REACT_APP_API_BASE_URL || "";
+  // const baseUrl = import.meta.env.VITE_REACT_APP_API_BASE_URL || "";
   const itemsPerPage = 10; // Počet položek, které se zobrazí najednou
 
   // Načítání dat z API
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`${baseUrl}/api/v1/games`);
+        // const response = await fetch(`${baseUrl}/api/v1/games`);
+        const response = await fetch(`/api/v1/games`);
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }

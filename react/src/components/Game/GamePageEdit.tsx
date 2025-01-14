@@ -18,7 +18,9 @@ function GamePageEdit() {
   const [error, setError] = useState<string | null>(null);
   const [board, setBoard] = useState<string[][] | null>(null);
   const [currentPlayer, setCurrentPlayer] = useState<"X" | "O">("X");
-  const baseUrl = import.meta.env.VITE_REACT_APP_API_BASE_URL || "";
+
+  // const baseUrl = import.meta.env.VITE_REACT_APP_API_BASE_URL || "";
+  const baseUrl = "";
   const [imageAndText, setImageAndText] = useState({
     src: "../../zarivka_playing_bile.svg",
     text: "Hraje se...",

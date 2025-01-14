@@ -1,12 +1,16 @@
 import ButtonLink from "../GlobalComponents/ButtonLink";
-
 import { Link } from "react-router-dom";
-
+import './Home.css';
 
 function Home() {
   return (
     <div className="h-screen">
       <div className="h-[50%] md:h-3/5 bg-[#1A1A1A] relative">
+        <img
+          src="/O_modre.svg"
+          alt="Moving Modré kolečko"
+          className="circle-one"
+        />
         <Link to="/" className="top-0 left-0 m-4">
           <img
             src="./Think-different-Academy_LOGO_oficialni-bile.svg"
@@ -30,15 +34,22 @@ function Home() {
           background: "linear-gradient(to bottom, #141E34 15%, #375694 85%)",
         }}
       >
-
         <div className="w-screen mt-14 lg:mt-0 md:pl-[25%]">
           <div className="flex md:w-[70%] lg:w-[60%] justify-center mb-4">
-            <img src="./zarivka_playing_bile.svg" alt="" className=" w-20 md:w-36 lg:w-[12%]" />
+            <img
+              src="./zarivka_playing_bile.svg"
+              alt=""
+              className=" w-20 md:w-36 lg:w-[12%]"
+            />
             <ButtonLink link="game" name="Nová hra" />
           </div>
           <div className="flex md:w-[70%] lg:w-[60%] justify-center mb-4">
-            <img src="./zarivka_idea_bile.svg" alt="" className=" w-16 mr-3 md:w-32 lg:w-[10%] lg:ml-3 lg:mr-4" />
-            <ButtonLink link="search" name="Seznam her"/>
+            <img
+              src="./zarivka_idea_bile.svg"
+              alt=""
+              className=" w-16 mr-3 md:w-32 lg:w-[10%] lg:ml-3 lg:mr-4"
+            />
+            <ButtonLink link="search" name="Seznam her" />
           </div>
         </div>
 

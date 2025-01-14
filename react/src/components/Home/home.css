@@ -1,0 +1,35 @@
+@keyframes circle-one {
+   0% {
+    top: 5%;
+    left: 90%;
+   }
+   20% {
+    top: 7%;
+    left: 92%
+   }
+   40% {
+    top: 5%;
+    left: 88%
+   }
+   60% {
+    top: 3%;
+    left: 86%
+   }
+   80% {
+    top: 5%;
+    left: 88%
+   }
+   100% {
+    top: 5%;
+    left: 90%;
+   }
+ }
+
+.circle-one {
+  position: absolute;
+  top: 5%;
+  left: 90%;
+  width: 7vw; 
+  height: 7vw; 
+  animation: circle-one 5s ease-in-out infinite;
+}

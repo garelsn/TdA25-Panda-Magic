@@ -22,8 +22,7 @@ function GamePagePlay() {
   });
   const [isGameOver, setIsGameOver] = useState(false);
   const [winner, setWinner] = useState<"X" | "O" | null>(null);
-  // const baseUrl = import.meta.env.VITE_REACT_APP_API_BASE_URL || "";
-  const baseUrl = "";
+  const baseUrl = import.meta.env.VITE_REACT_APP_API_BASE_URL || "";
   
   console.log(isGameOver)
   console.log(winner)

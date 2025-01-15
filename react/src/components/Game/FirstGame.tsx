@@ -80,8 +80,8 @@ function FirstGame() {
 
             <ButtonLink link="../game" name="Nová hra" onClick/>
           
-          <div className="mt-28  grid-cols-2 items-center bg-slate-100 w-full lg:min-w-[50%] lg:max-w-[65%] p-4 rounded-xl hidden lg:grid">
-            <img src={imageAndText.src} alt="Dynamický obrázek" className="w-20 h-20 mb-2 bg-[#1A1A1A] rounded-lg" />
+            <div className="mt-28 flex md:grid md:grid-cols-2 items-center bg-slate-100 w-full lg:min-w-[50%] lg:max-w-[65%] p-4 rounded-xl md:col-span-1 lg:grid col-span-2">
+            <img src={imageAndText.src} alt="Dynamický obrázek" className="w-20 h-20 mb-2 bg-[#1A1A1A] rounded-lg mr-14 md:mr-0" />
             {playerIndicator}
           </div>
         </div>

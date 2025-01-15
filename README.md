@@ -65,3 +65,29 @@ Jak využít nástroj [Pipenv](https://pypi.org/project/pipenv/), který kombinu
 ## Odevzdání
 
 Jak odevzdat svojí aplikaci můžete najít v našich [vzdělávacích materiálech](https://tourde.app/vzdelavaci-materialy/jak-odevzdavat)
+
+## Členové týmu Panda Magic
+
+Tomáš Valenta, Kristýna Ručková, Ondra Halacz
+
+## Technologie
+
+Použité technologie jsou React, Tailwind, Flask
+
+## První spuštění
+
+cd react
+npm i
+když instalace proběhne, tak zadat příkaz npm run
+v novém terminálu: cd react
+npm run tailwind
+v novém terminálu v kořenové složce TdA25-Panda-Magic dát flask --app app\app.py init-db
+když je instalace hotová, tak zadat příkaz flask --app app/app.py run
+
+## Opakované spuštění
+
+cd react
+npm run
+v novém terminálu: cd react
+npm run tailwind
+v novém terminálu v kořenové složce TdA25-Panda-Magic dát flask --app app/app.py run-->

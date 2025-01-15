@@ -15,3 +15,13 @@
   ::-webkit-scrollbar-thumb:hover {
     background: #555; /* Barva posuvníku při najetí myší */
   }
+  @keyframes fall {
+    0% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(110vh); /* Padají přes celý div */
+      opacity: 0;
+    }
+  }

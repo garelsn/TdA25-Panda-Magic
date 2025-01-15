@@ -31,42 +31,26 @@
   left: 90%;
   width: 7vw; 
   height: 7vw; 
-  animation: circle-one 30s ease-in-out infinite;
-  z-index: 0;
+  animation: circle-one 45s ease-in-out infinite;
+  z-index: 1;
 }
 
 @keyframes cross-one {
 	0% {
-		top: 14%;
-		left: 15%
+		top: 11%;
+		left: 31%
 	}
-	14% {
-		top: 15%;
-		left: 21%
+	33% {
+		top: 11%;
+		left: 10%
 	}
-	29% {
-		top: 21%;
-		left: 22%
-	}
-	43% {
-		top: 23%;
-		left: 17%
-	}
-	57% {
-		top: 16%;
-		left: 13%
-	}
-	71% {
-		top: 13%;
-		left: 15%
-	}
-	86% {
-		top: 18%;
-		left: 17%
+	67% {
+		top: 40%;
+		left: 9%
 	}
 	100% {
-		top: 14%;
-		left: 15%
+		top: 11%;
+		left: 31%
 	}
 }
 
@@ -76,30 +60,26 @@
     left: 16%;
     width: 12vw;
     height: 12vw;
-    animation: cross-one 30s ease-in-out infinite;
-    z-index: 0;
+    animation: cross-one 45s ease-in-out infinite;
+    z-index: 1;
 }
 
 @keyframes cross-two {
 	0% {
+		top: 23%;
+		left: 51%
+	}
+	33% {
+		top: 53%;
+		left: 71%
+	}
+	67% {
 		top: 34%;
-		left: 65%
-	}
-	25% {
-		top: 36%;
-		left: 53%
-	}
-	50% {
-		top: 27%;
-		left: 62%
-	}
-	75% {
-		top: 34%;
-		left: 67%
+		left: 54%
 	}
 	100% {
-		top: 34%;
-		left: 65%
+		top: 23%;
+		left: 51%
 	}
 }
 
@@ -109,6 +89,35 @@
     left: 16%;
     width: 17vw;
     height: 17vw;
-    animation: cross-two 30s ease-in-out infinite;
-    z-index: 0;
+    animation: cross-two 45s ease-in-out infinite;
+    z-index: 1;
+}
+
+@keyframes circle-two {
+	0% {
+		top: 73%;
+		left: 19%
+	}
+	33% {
+		top: 72%;
+		left: 39%
+	}
+	67% {
+		top: 30%;
+		left: 43%
+	}
+	100% {
+		top: 73%;
+		left: 19%
+	}
+}
+
+.circle-two {
+    position: absolute;
+    top: 15%;
+    left: 16%;
+    width: 5vw;
+    height: 5vw;
+    animation: circle-two 45s ease-in-out infinite;
+    z-index: 1;
 }

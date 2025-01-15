@@ -6,7 +6,27 @@ function Home() {
   return (
     <div className="h-screen">
       <div className="h-[50%] md:h-3/5 bg-[#1A1A1A] relative">
-        <Link to="/" className="top-0 left-0 m-4">
+        <img
+            src="/O_modre.svg"
+            alt="Moving Modré kolečko"
+            className="circle-one"
+          />
+          <img
+            src="/O_modre.svg"
+            alt="Moving Modré kolečko"
+            className="circle-two"
+          />
+          <img
+            src="/X_cervene.svg"
+            alt="Moving Červený křížek"
+            className="cross-one"
+          />
+          <img
+            src="/X_cervene.svg"
+            alt="Moving Červený křížek"
+            className="cross-two"
+          />
+        <Link to="/" className="top-0 left-0 m-4 z-10">
           <img
             src="./Think-different-Academy_LOGO_oficialni-bile.svg"
             alt="Logo"
@@ -22,21 +42,6 @@ function Home() {
           />
           rky
         </h1>
-        <img
-          src="/O_modre.svg"
-          alt="Moving Modré kolečko"
-          className="circle-one"
-        />
-        <img
-          src="/X_cervene.svg"
-          alt="Moving Červený křížek"
-          className="cross-one"
-        />
-        <img
-          src="/X_cervene.svg"
-          alt="Moving Červený křížek"
-          className="cross-two"
-        />
       </div>
       <div
         className="h-2/5 flex flex-col items-center justify-center"

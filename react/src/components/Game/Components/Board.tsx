@@ -21,7 +21,7 @@ const Board: React.FC<BoardProps> = ({ board, onCellClick, x, o, currentPlayer }
           <div
             onClick={() => onCellClick(rowIndex, colIndex)}
             key={`${rowIndex}-${colIndex}`}
-            className={`w-7 h-7 md:w-8 md:h-8 lg:w-10 lg:h-10 flex items-center justify-center cursor-pointer rounded-md bg-white 
+            className={`w-5 h-5 md:w-8 md:h-8 lg:w-10 lg:h-10 flex items-center justify-center cursor-pointer rounded-md bg-white 
               ${cell === "" ? `hover:scale-110 transition-transform duration-200 ease-out` : ""}
               ${
                 cell === "" && currentPlayer === "X"

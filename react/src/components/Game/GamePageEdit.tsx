@@ -6,9 +6,11 @@ import UpdateButton from "./Components/UpdateButton";
 import BannerSm from "../GlobalComponents/BannerSm";
 import ButtonLink from "../GlobalComponents/ButtonLink";
 import WinAnimation from "../WinAnimation/WinAnimation";
+import DifficultyComponent from "./Components/DifficultyComponent";
 
 interface Game {
   name: string;
+  difficulty:string;
   board: string[][];
 }
 
@@ -104,7 +106,7 @@ function GamePageEdit() {
           />
         </div>
 
-        <div className="w-full lg:w-1/2 h-16 grid grid-cols-2 lg:grid-cols-1 gap-0 p-4 lg:mt-28 justify-items-center lg:justify-items-start">
+        <div className="w-full lg:w-1/2 h-16 grid grid-cols-2 lg:grid-cols-1 gap-0 p-4 lg:mt-9 justify-items-center lg:justify-items-start">
           <UpdateButton board={board} />
           <div className="hidden lg:block lg:ml-12">   
             <ButtonLink link="../search" name="Seznam her" />
@@ -112,7 +114,7 @@ function GamePageEdit() {
 
           <DelateButton />
 
-          <div className="mt-20 grid-cols-2 items-center bg-slate-100 w-full lg:min-w-[50%] lg:max-w-[65%] p-4 rounded-xl hidden lg:grid">
+          <div className="mt-10 grid-cols-2 items-center bg-slate-100 w-full lg:min-w-[50%] lg:max-w-[65%] p-4 rounded-xl hidden lg:grid">
             <img
               src={imageAndText.src}
               alt="Dynamický obrázek"
@@ -120,7 +122,7 @@ function GamePageEdit() {
             />
             {playerIndicator}
           </div>
-
+          <DifficultyComponent difficulty={game.difficulty}/>
         </div>
       </div>
     </div>

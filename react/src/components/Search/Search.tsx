@@ -14,6 +14,7 @@ const Search: React.FC = () => {
   // Načítání dat z API
   useEffect(() => {
     const fetchData = async () => {
+      console.log("ts: "+baseUrl)
       try {
         const response = await fetch(`${baseUrl}/api/v1/games`);
         if (!response.ok) {

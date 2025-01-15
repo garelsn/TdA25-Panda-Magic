@@ -63,9 +63,11 @@ const TaskFilter: React.FC<{ tasks: Task[] }> = ({ tasks }) => {
                     onChange={(e) => setDifficulty(e.target.value || null)}
                 >
                     <option value="">Všechny obtížnosti</option>
-                    <option value="easy">Easy</option>
-                    <option value="medium">Medium</option>
-                    <option value="hard">Hard</option>
+                    <option value="začátečník">Začátečník</option>
+                    <option value="jednoduchá">Jednoduchá</option>
+                    <option value="pokročilá">Pokročilá</option>
+                    <option value="těžká">Těžká</option>
+                    <option value="nejtěžší">Nejtěžší</option>
                 </select>
 
     

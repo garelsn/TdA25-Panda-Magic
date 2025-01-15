@@ -121,16 +121,18 @@ const WinAnimation: React.FC<BoardProps> = ({ board, setIsGameOver, setWinner })
       {modalVisible && winner && (
         <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50">
           <div className="bg-white text-center p-8 rounded-lg shadow-lg relative md:w-[40%] md:h-[20%] lg:w-[30%] lg:h-[20%] flex flex-col md:flex-row items-center justify-center">
-            <h2 className="text-3xl font-bold text-gray-800 md:text-5xl">
-              Vyhrál hráč
-            </h2>
-            <span className="inline-block w-12 h-12 ml-0 mt-4 md:ml-2 md:mt-0">
-              <img
-                src={winner === "X" ? "../../X_cervene.svg" : "../../O_modre.svg"}
-                alt={`Hráč ${winner}`}
-                className="w-full h-full"
-              />
-            </span>
+            <div className="flex flex-col items-center">
+              <h2 className="text-3xl font-bold text-gray-800 md:text-5xl">
+                Vyhrál hráč
+              </h2>
+              <span className="inline-block w-12 h-12 ml-0 mt-4 md:ml-2 md:mt-0">
+                <img
+                  src={winner === "X" ? "../../X_cervene.svg" : "../../O_modre.svg"}
+                  alt={`Hráč ${winner}`}
+                  className="w-full h-full mt-4"
+                />
+              </span>
+            </div>
             <button
               className="absolute top-2 right-3 text-2xl font-bold text-gray-600 md:text-5xl md:right-6 lg:right-4"
               onClick={() => setModalVisible(false)}

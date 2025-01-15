@@ -2,32 +2,48 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DefaultButton from "../../GlobalComponents/DefaultButton";
 type BoardProps = {
-    board: string[][];
-};
-
+    board: string[][]; 
+}; 
+ 
 const SaveForm: React.FC<BoardProps> = ({ board }) => {
     const [isOpen, setIsOpen] = useState(false);
-    const navigate = useNavigate()
-    const baseUrl = import.meta.env.VITE_REACT_APP_API_BASE_URL ||""
-    const [formData, setFormData] = useState({ name: "", difficulty: "hard" })
-    
+    const [errorMessage, setErrorMessage] = useState("");
+    const navigate = useNavigate();
+    const baseUrl = import.meta.env.VITE_REACT_APP_API_BASE_URL || "";
+    const [formData, setFormData] = useState({ name: "", difficulty: "hard" });
+
     const togglePopup = () => {
         setIsOpen(!isOpen);
+        setErrorMessage("");
     };
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
-    const handleSubmit = async (e:React.FormEvent) => {
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        const gameData = { 
+        const hasPlayerPlayed = board.some(row => row.some(cell => cell !== ""));
+
+        if (!hasPlayerPlayed) {
+            setErrorMessage("Oba hráči musí odehrát alespoň jeden tah.");
+            return;
+        }
+
+        const xCount = board.flat().filter(cell => cell.toLowerCase() === "x").length;
+        const oCount = board.flat().filter(cell => cell.toLowerCase() === "o").length;
+
+        if (xCount !== oCount) {
+            setErrorMessage("Počet tahů hráčů X a O musí být stejný.");
+            return;
+        }
+
+        const gameData = {
             name: formData.name,
             difficulty: formData.difficulty,
-            board: board,
-        };
-
-        alert("Formulář odeslán!");
-        setIsOpen(false); // Zavření po odeslání
-
+            board: board, 
+        }; 
+ 
         try {
             const response = await fetch(`${baseUrl}/api/v1/games`, {
                 method: "POST",
@@ -39,13 +55,14 @@ const SaveForm: React.FC<BoardProps> = ({ board }) => {
                 const data = await response.json();
                 const uuid = data.uuid; // Získání UUID z odpovědi
                 navigate(`/game/${uuid}`); // Přesměrování
+                setIsOpen(false);
             } else {
-                console.error("Chyba při ukládání hry.");
+                setErrorMessage("Chyba při ukládání hry. Zkuste to znovu.");
             }
         } catch (error) {
-            console.error("Došlo k chybě:", error);
-        }
-    };
+            setErrorMessage("Došlo k chybě při komunikaci se serverem. Zkuste to znovu."); 
+        } 
+    }; 
 
     return (
         <div>
@@ -55,77 +72,67 @@ const SaveForm: React.FC<BoardProps> = ({ board }) => {
             {/* Pop-up formulář */}
             {isOpen && (
                 <div
-                    style={{
-                        position: "fixed",
-                        top: 0,
-                        left: 0,
-                        width: "100%",
-                        height: "100%",
-                        backgroundColor: "rgba(0, 0, 0, 0.5)",
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                    }}
-                >
-                    <div
-                        style={{
-                            backgroundColor: "white",
-                            padding: "20px",
-                            borderRadius: "8px",
-                            boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
-                            minWidth: "300px",
-                        }}
-                    >
-                        <h2 className="font-bold text-center">Uložení hry</h2>
+                    className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center z-50"
+                > 
+                    <div 
+                        className="bg-white p-5 rounded-lg shadow-md min-w-[300px]"
+                    > 
+                        <h2 className="font-bold text-center">Uložení hry</h2> 
                         <form onSubmit={handleSubmit}>
-                            <div style={{ marginBottom: "15px" }}>
-                                <label htmlFor="name">Jméno hry:</label>
+                            <div className="mb-4">
+                                <label htmlFor="name" className="block">Jméno hry:</label>
                                 <input
                                     type="text"
                                     id="name"
                                     name="name"
-                                    style={{ width: "100%", padding: "8px", marginTop: "5px" }}
+                                    className="w-full p-2 mt-1 border border-gray-300 rounded"
                                     value={formData.name}
                                     onChange={handleChange}
-                                    required
-                                />
-                            </div>
-                            <div style={{ marginBottom: "15px" }}>
-                                <select id="difficulty" name="difficulty" required value={formData.difficulty} onChange={handleChange}>
-                                    <option value="easy">Easy</option>
-                                    <option value="medium">Medium</option>
-                                    <option value="hard">Hard</option>
+                                    required 
+                                /> 
+                            </div> 
+                            <label htmlFor="difficulty" className="block">Obtížnost</label>
+                            <div className="mb-4">
+                            <select 
+                                id="difficulty" 
+                                name="difficulty" 
+                                required 
+                                value={formData.difficulty} 
+                                onChange={handleChange} 
+                                className="w-full p-2 border border-gray-300 rounded"
+                                >
+                                    <option value="začátečník">Začátečník</option>
+                                    <option value="jednoduchá">Jednoduchá</option>
+                                    <option value="pokročilá">Pokročilá</option>
+                                    <option value="těžká">Těžká</option>
+                                    <option value="nejtěžší">Nejtěžší</option>
                                 </select>
                             </div>
-                            <div style={{ marginBottom: "15px" }}>
+                            <div className="mb-4">
+                                {errorMessage && (
+                                    <p className="text-red-500 font-bold">{errorMessage}</p>
+                                )}
                             </div>
-                            <div style={{ display: "flex", justifyContent: "space-between" }}>
-                            <button
+                            <div className="flex justify-between">
+                                <button
                                     type="button"
                                     onClick={togglePopup}
-                                    style={{
-                                        padding: "10px 20px",
-                                        backgroundColor: "#f44336",
-                                        color: "white",
-                                        border: "none",
-                                        borderRadius: "4px",
-                                        cursor: "pointer",
-                                    }}
+                                    className="px-4 py-2 bg-red-500 text-white rounded"
                                 >
                                     Zavřít
                                 </button>
                                 
-                                <button type="submit" style={{ padding: "10px 20px" }}>
+                                <button type="submit" className="px-4 py-2 bg-green-500 text-white rounded">
                                     Uložit hru
-                                </button>
-         
-                            </div>
+                                </button> 
+
+                            </div> 
                         </form>
                     </div>
-                </div>
-            )}
-        </div>
-    );
-};
-
+                </div> 
+            )} 
+        </div> 
+    ); 
+}; 
+ 
 export default SaveForm;

@@ -2,10 +2,11 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import DefaultButton from "../../GlobalComponents/DefaultButton";
-const DelateButton: React.FC = () => {
+
+const DeleteButton: React.FC = () => {
     const [isOpen, setIsOpen] = useState(false);
-    const navigate = useNavigate()
-    const baseUrl = import.meta.env.VITE_REACT_APP_API_BASE_URL ||""
+    const navigate = useNavigate();
+    const baseUrl = import.meta.env.VITE_REACT_APP_API_BASE_URL || "";
     const { uuid } = useParams<{ uuid: string }>();
 
     const togglePopup = () => {
@@ -24,7 +25,6 @@ const DelateButton: React.FC = () => {
             });
 
             if (response.ok) {
-                alert("Hra byla úspěšně smazána!");
                 setIsOpen(false); // Zavření po úspěšném smazání
                 navigate("/"); // Přesměrování na seznam her (nebo jinou stránku)
             } else {
@@ -34,58 +34,32 @@ const DelateButton: React.FC = () => {
             console.error("Došlo k chybě při mazání hry:", error);
         }
     };
+
     return (
         <div>
             {/* Tlačítko pro otevření pop-upu */}
-            <DefaultButton onClick={togglePopup} text="Smazat hru"/>
+            <DefaultButton onClick={togglePopup} text="Smazat hru" />
 
             {/* Pop-up formulář */}
             {isOpen && (
-                <div
-                    style={{
-                        position: "fixed",
-                        top: 0,
-                        left: 0,
-                        width: "100%",
-                        height: "100%",
-                        backgroundColor: "rgba(0, 0, 0, 0.5)",
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                    }}
-                >
-                    <div
-                        style={{
-                            backgroundColor: "white",
-                            padding: "20px",
-                            borderRadius: "8px",
-                            boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
-                            minWidth: "300px",
-                        }}
-                    >
-                        
-                        <h2>Opravdu si přejete smazat hru?</h2>
-                        <div style={{ marginBottom: "15px" }}>
-                        </div>
-                        <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white p-6 rounded-lg shadow-lg min-w-[300px]">
+                        <h2 className="text-lg font-semibold mb-4">Opravdu si přejete smazat hru?</h2>
+                        <div className="flex justify-between">
                             <button
                                 type="button"
                                 onClick={togglePopup}
-                                style={{
-                                    padding: "10px 20px",
-                                    backgroundColor: "#f44336",
-                                    color: "white",
-                                    border: "none",
-                                    borderRadius: "4px",
-                                    cursor: "pointer",
-                                }}
-                                >
+                                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                            >
                                 Zavřít
                             </button>
-                            <button  onClick={deleteGame} style={{ padding: "10px 20px" }}>
-                                        Smazat hru
+                            <button
+                                onClick={deleteGame}
+                                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                            >
+                                Smazat hru
                             </button>
-                            </div>
+                        </div>
                     </div>
                 </div>
             )}
@@ -93,4 +67,4 @@ const DelateButton: React.FC = () => {
     );
 };
 
-export default DelateButton;
+export default DeleteButton;

@@ -407,6 +407,7 @@ def UpdateUserById(uuid):
         (userName, email, password, elo, uuid)
     )
 
+    sqlDB.commit()
     sqlDB.close()
 
     return jsonify(response), 200

@@ -283,9 +283,20 @@ def createPlayer():
     unique_id = str(uuid.uuid4())
     current_time = datetime.utcnow().isoformat(timespec='milliseconds') + "Z"
 
+    additionalValues = {
+        "elo": data.get("elo") if data.get("elo") is not None else 0,
+        "wins": data.get("wins") if data.get("wins") is not None else 0,
+        "draws": data.get("draws") if data.get("draws") is not None else 0,
+        "losses": data.get("losses") if data.get("losses") is not None else 0,
+        "profileImage": data.get("profileImage") if data.get("profileImage") is not None else 'default.webp',
+        "ban": data.get("ban") if data.get("ban") is not None else False,
+        "admin": data.get("admin") if data.get("admin") is not None else False,
+        "games": data.get("games") if data.get("games") is not None else '[]'
+    }
+    
     sqlDB.execute(
-        'INSERT INTO users (uuid, createdAt, loginAt, username, email, password, elo, wins, draws, losses, profilImage, ban, admin, games) VALUES (?, ?,?,?,?,?,?,?,?,?,?,?,?, ?)',
-        (unique_id, current_time, current_time, userName, email, password, data.get("elo"), data.get("wins"), data.get("draws"), data.get("losses"), data.get("profilImage"), data.get("ban"), data.get("admin"), data.get("games"))
+        'INSERT INTO users (uuid, createdAt, loginAt, username, email, password, elo, wins, draws, losses, profileImage, ban, admin, games) VALUES (?, ?,?,?,?,?,?,?,?,?,?,?,?, ?)',
+        (unique_id, current_time, current_time, userName, email, password, additionalValues["elo"], additionalValues["wins"], additionalValues["draws"], additionalValues["losses"], additionalValues["profileImage"], additionalValues["ban"], additionalValues["admin"], additionalValues["games"])
     )
     # Nejsem si 100% ale předpokládám, že když je loginAt Not Null, tak je to CreatedAt při vytváření.
 

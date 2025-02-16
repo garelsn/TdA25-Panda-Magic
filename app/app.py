@@ -390,21 +390,30 @@ def UpdateUserById(uuid):
         ), 404
 
     column_names = [ description[0] for description in cursor.description ]
-    result = { column_names[i]: DBItem[i] for i in range(len(column_names)) }
+    DbData = { column_names[i]: DBItem[i] for i in range(len(column_names)) }
 
     response = {
         "uuid": uuid,
-        "createdAt": result["createdAt"],
         "username": userName,
         "email": email,
         "elo": elo
     }
 
-    response.update(result)
+    optionalData = {
+        "createdAt": DbData["createdAt"],
+        "wins": data.get("wins"),
+        "draws": data.get("draws"),
+        "losses": data.get("losses")
+    }
+
+    if None in optionalData.values():
+        optionalData = DbData
+
+    response.update(optionalData)
      
     sqlDB.execute(
-        'UPDATE users SET username=?, email=?, password=?, elo=? WHERE uuid=?',
-        (userName, email, password, elo, uuid)
+        'UPDATE users SET username=?, email=?, password=?, elo=?, wins=?, draws=?, losses=? WHERE uuid=?',
+        (userName, email, password, elo, response["wins"], response["draws"], response["losses"], uuid)
     )
 
     sqlDB.commit()

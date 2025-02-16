@@ -247,6 +247,44 @@ def deleteGameById(uuid):
         }
     ), 204
 
+@app.route("/api/v1/users/", methods=["POST"])
+def createPlayer():
+
+    data = request.get_json()
+
+    userName, email, password, elo = (data.get("username"), data.get("email"), data.get("password"), data.get("elo"))
+
+    if None in (userName, email, password, elo):
+        return jsonify(
+            {
+                "code": 400,
+                "message": "Bad request: Missing required parameters"
+            }
+        ), 400
+    
+    sqlDB = db.get_db()
+    unique_id = str(uuid.uuid4())
+    current_time = datetime.utcnow().isoformat(timespec='milliseconds') + "Z"
+    
+    responce = {
+        "uuid": unique_id,
+        "createdAt": current_time,
+        "username": userName,
+        "email": email,
+        "elo": elo,
+        "wins": 0,
+        "draws": 0,
+        "losses": 0
+    }
+
+    sqlDB.execute(
+        'INSERT INTO users (uuid, createdAt, loginAt, username, email, password, elo, wins, draws, losses) VALUES (?, ?,?,?,?,?,?,?,?, ?)',
+        (responce["uuid"], responce["createdAt"], responce["createdAt"], responce["username"], responce["email"], password, responce["elo"], responce["wins"], responce["draws"], responce["losses"])
+    )
+    # Nejsem si 100% ale předpokládám, že když je loginAt Not Null, tak je to CreatedAt při vytváření.
+
+    return jsonify(responce), 201
+
 if __name__ == '__main__':
     app.run(debug=True)
 

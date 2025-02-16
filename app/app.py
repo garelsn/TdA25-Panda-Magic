@@ -247,7 +247,7 @@ def deleteGameById(uuid):
         }
     ), 204
 
-@app.route("/api/v1/users/", methods=["POST"])
+@app.route("/api/v1/users", methods=["POST"])
 def createPlayer():
 
     data = request.get_json()
@@ -261,8 +261,24 @@ def createPlayer():
                 "message": "Bad request: Missing required parameters"
             }
         ), 400
-    
+
     sqlDB = db.get_db()
+
+
+    cursor = sqlDB.cursor()
+    cursor.execute("SELECT email FROM users")
+    emails = cursor.fetchall()
+
+    emails = [email[0] for email in emails]
+
+    if (email in emails):
+        return jsonify(
+            {
+                "code": 409,
+                "message": "Bad request: Email already exists"
+            }
+        ), 400
+
     unique_id = str(uuid.uuid4())
     current_time = datetime.utcnow().isoformat(timespec='milliseconds') + "Z"
     
@@ -283,7 +299,27 @@ def createPlayer():
     )
     # Nejsem si 100% ale předpokládám, že když je loginAt Not Null, tak je to CreatedAt při vytváření.
 
+    sqlDB.commit()
+
+    sqlDB.close()
+
     return jsonify(responce), 201
+
+@app.route("/api/v1/users", methods=["GET"])
+def returnAllUsers():
+
+    sqlDB = db.get_db()
+    
+    cursor = sqlDB.cursor()
+    cursor.execute("SELECT uuid, createdAt, username, email, elo, wins, draws, losses FROM users")
+    DBItems = cursor.fetchall()
+
+    sqlDB.close()
+
+    column_names = [ description[0] for description in cursor.description ]
+    result = [ { column_names[i]: row[i] for i in range(len(column_names)) } for row in DBItems]
+
+    return jsonify(result), 200
 
 if __name__ == '__main__':
     app.run(debug=True)

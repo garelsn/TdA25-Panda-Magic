@@ -253,9 +253,9 @@ def createPlayer():
 
     data = request.get_json()
 
-    userName, email, password, elo = (data.get("username"), data.get("email"), data.get("password"), data.get("elo"))
+    userName, email, password = (data.get("username"), data.get("email"), hash(data.get("password")+"_TDA"))
 
-    if None in (userName, email, password, elo):
+    if None in (userName, email, password):
         return jsonify(
             {
                 "code": 400,
@@ -282,25 +282,21 @@ def createPlayer():
 
     unique_id = str(uuid.uuid4())
     current_time = datetime.utcnow().isoformat(timespec='milliseconds') + "Z"
-    
-    responce = {
-        "uuid": unique_id,
-        "createdAt": current_time,
-        "username": userName,
-        "email": email,
-        "elo": elo,
-        "wins": 0,
-        "draws": 0,
-        "losses": 0
-    }
 
     sqlDB.execute(
-        'INSERT INTO users (uuid, createdAt, loginAt, username, email, password, elo, wins, draws, losses) VALUES (?, ?,?,?,?,?,?,?,?, ?)',
-        (responce["uuid"], responce["createdAt"], responce["createdAt"], responce["username"], responce["email"], password, responce["elo"], responce["wins"], responce["draws"], responce["losses"])
+        'INSERT INTO users (uuid, createdAt, loginAt, username, email, password, elo, wins, draws, losses, profilImage, ban, admin, games) VALUES (?, ?,?,?,?,?,?,?,?,?,?,?,?, ?)',
+        (unique_id, current_time, current_time, userName, email, password, data.get("elo"), data.get("wins"), data.get("draws"), data.get("losses"), data.get("profilImage"), data.get("ban"), data.get("admin"), data.get("games"))
     )
     # Nejsem si 100% ale předpokládám, že když je loginAt Not Null, tak je to CreatedAt při vytváření.
 
     sqlDB.commit()
+
+    cursor = sqlDB.cursor()
+    cursor.execute("SELECT * FROM users WHERE uuid=?", (unique_id,))
+    DBItem = cursor.fetchone()
+
+    column_names = [ description[0] for description in cursor.description ]
+    responce = { column_names[i]: DBItem[i] for i in range(len(column_names)) }
 
     sqlDB.close()
 
@@ -312,7 +308,7 @@ def returnAllUsers():
     sqlDB = db.get_db()
     
     cursor = sqlDB.cursor()
-    cursor.execute("SELECT uuid, createdAt, username, email, elo, wins, draws, losses FROM users")
+    cursor.execute("SELECT * FROM users")
     DBItems = cursor.fetchall()
 
     sqlDB.close()
@@ -328,7 +324,7 @@ def returnUserById(uuid):
     sqlDB = db.get_db()
     
     cursor = sqlDB.cursor()
-    cursor.execute("SELECT uuid, createdAt, username, email, elo, wins, draws, losses FROM users WHERE uuid=?", (uuid,))
+    cursor.execute("SELECT * FROM users WHERE uuid=?", (uuid,))
     DBItem = cursor.fetchone()
 
     if DBItem is None:
@@ -351,7 +347,7 @@ def UpdateUserById(uuid):
     
     data = request.get_json()
 
-    userName, email, password, elo = (data.get("username"), data.get("email"), data.get("password"), data.get("elo"))
+    userName, email, password, elo = (data.get("username"), data.get("email"), hash(data.get("password")+"_TDA"), data.get("elo"))
 
     if None in (userName, email, password, elo):
         return jsonify(

@@ -321,6 +321,30 @@ def returnAllUsers():
 
     return jsonify(result), 200
 
+@app.route("/api/v1/users/<uuid>", methods=["GET"])
+def returnUserById(uuid):
+
+    sqlDB = db.get_db()
+    
+    cursor = sqlDB.cursor()
+    cursor.execute("SELECT uuid, createdAt, username, email, elo, wins, draws, losses FROM users WHERE uuid=?", (uuid,))
+    DBItem = cursor.fetchone()
+
+    if DBItem is None:
+        return jsonify(
+            {
+                "code": 404,
+                "message": "Resource not found"
+            }
+        ), 404
+
+    sqlDB.close()
+
+    column_names = [ description[0] for description in cursor.description ]
+    result = { column_names[i]: DBItem[i] for i in range(len(column_names)) }
+
+    return jsonify(result), 200
+
 if __name__ == '__main__':
     app.run(debug=True)
 

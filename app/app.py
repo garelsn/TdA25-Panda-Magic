@@ -214,9 +214,6 @@ def updateGameById(uuid):
 
     return jsonify(response), 200
 
-
-
-
 @app.route("/api/v1/games/<uuid>", methods=["DELETE"])
 def deleteGameById(uuid):
     sqlDB = db.get_db()
@@ -246,6 +243,10 @@ def deleteGameById(uuid):
             "message": f"Game with UUID {uuid} successfully deleted"
         }
     ), 204
+
+
+
+
 
 @app.route("/api/v1/users", methods=["POST"])
 def createPlayer():
@@ -344,6 +345,71 @@ def returnUserById(uuid):
     result = { column_names[i]: DBItem[i] for i in range(len(column_names)) }
 
     return jsonify(result), 200
+
+@app.route("/api/v1/users/<uuid>", methods=["PUT"])
+def UpdateUserById(uuid):
+    
+    data = request.get_json()
+
+    userName, email, password, elo = (data.get("username"), data.get("email"), data.get("password"), data.get("elo"))
+
+    if None in (userName, email, password, elo):
+        return jsonify(
+            {
+                "code": 400,
+                "message": "Bad request: Missing required parameters"
+            }
+        ), 400
+
+    sqlDB = db.get_db()
+
+
+    cursor = sqlDB.cursor()
+    cursor.execute("SELECT email FROM users")
+    emails = cursor.fetchall()
+
+    emails = [email[0] for email in emails]
+
+    if (email in emails):
+        return jsonify(
+            {
+                "code": 409,
+                "message": "Bad request: Email already exists"
+            }
+        ), 400
+    
+    cursor.execute("SELECT createdAt, wins, draws, losses FROM users WHERE uuid=?", (uuid,))
+    DBItem = cursor.fetchone()
+
+    if DBItem is None:
+        return jsonify(
+            {
+                "code": 404,
+                "message": "Resource not found"
+            }
+        ), 404
+
+    column_names = [ description[0] for description in cursor.description ]
+    result = { column_names[i]: DBItem[i] for i in range(len(column_names)) }
+
+    response = {
+        "uuid": uuid,
+        "createdAt": result["createdAt"],
+        "username": userName,
+        "email": email,
+        "elo": elo
+    }
+
+    response.update(result)
+     
+    sqlDB.execute(
+        'UPDATE users SET username=?, email=?, password=?, elo=? WHERE uuid=?',
+        (userName, email, password, elo, uuid)
+    )
+
+    sqlDB.close()
+
+    return jsonify(response), 200
 
 @app.route("/api/v1/users/<uuid>", methods=["DELETE"])
 def deleteUserById(uuid):

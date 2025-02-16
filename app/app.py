@@ -298,7 +298,6 @@ def createPlayer():
         'INSERT INTO users (uuid, createdAt, loginAt, username, email, password, elo, wins, draws, losses, profileImage, ban, admin, games) VALUES (?, ?,?,?,?,?,?,?,?,?,?,?,?, ?)',
         (unique_id, current_time, current_time, userName, email, password, additionalValues["elo"], additionalValues["wins"], additionalValues["draws"], additionalValues["losses"], additionalValues["profileImage"], additionalValues["ban"], additionalValues["admin"], additionalValues["games"])
     )
-    # Nejsem si 100% ale předpokládám, že když je loginAt Not Null, tak je to CreatedAt při vytváření.
 
     sqlDB.commit()
 
@@ -307,11 +306,11 @@ def createPlayer():
     DBItem = cursor.fetchone()
 
     column_names = [ description[0] for description in cursor.description ]
-    responce = { column_names[i]: DBItem[i] for i in range(len(column_names)) }
+    response = { column_names[i]: DBItem[i] for i in range(len(column_names)) }
 
     sqlDB.close()
 
-    return jsonify(responce), 201
+    return jsonify(response), 201
 
 @app.route("/api/v1/users", methods=["GET"])
 def returnAllUsers():
@@ -358,18 +357,7 @@ def UpdateUserById(uuid):
     
     data = request.get_json()
 
-    userName, email, password, elo = (data.get("username"), data.get("email"), hash(data.get("password")+"_TDA"), data.get("elo"))
-
-    if None in (userName, email, password, elo):
-        return jsonify(
-            {
-                "code": 400,
-                "message": "Bad request: Missing required parameters"
-            }
-        ), 400
-
     sqlDB = db.get_db()
-
 
     cursor = sqlDB.cursor()
     cursor.execute("SELECT email FROM users")
@@ -377,7 +365,7 @@ def UpdateUserById(uuid):
 
     emails = [email[0] for email in emails]
 
-    if (email in emails):
+    if (data.get("email") in emails):
         return jsonify(
             {
                 "code": 409,
@@ -385,7 +373,7 @@ def UpdateUserById(uuid):
             }
         ), 400
     
-    cursor.execute("SELECT createdAt, wins, draws, losses FROM users WHERE uuid=?", (uuid,))
+    cursor.execute("SELECT * FROM users WHERE uuid=?", (uuid,))
     DBItem = cursor.fetchone()
 
     if DBItem is None:
@@ -397,34 +385,31 @@ def UpdateUserById(uuid):
         ), 404
 
     column_names = [ description[0] for description in cursor.description ]
-    DbData = { column_names[i]: DBItem[i] for i in range(len(column_names)) }
-
-    response = {
-        "uuid": uuid,
-        "username": userName,
-        "email": email,
-        "elo": elo
+    response = { column_names[i]: DBItem[i] for i in range(len(column_names)) }
+    
+    additionalValues = {
+        "elo": data.get("elo") if data.get("elo") is not None else response["elo"],
+        "wins": data.get("wins") if data.get("wins") is not None else response["wins"],
+        "draws": data.get("draws") if data.get("draws") is not None else response["draws"],
+        "losses": data.get("losses") if data.get("losses") is not None else response["losses"],
+        "profileImage": data.get("profileImage") if data.get("profileImage") is not None else response["profileImage"],
+        "ban": data.get("ban") if data.get("ban") is not None else response["ban"],
+        "admin": data.get("admin") if data.get("admin") is not None else response["admin"],
+        "games": data.get("games") if data.get("games") is not None else response["games"],
+        "password": data.get("password") if data.get("password") is not None else response["games"],
+        "email": data.get("email") if data.get("email") is not None else response["email"],
+        "username": data.get("username") if data.get("username") is not None else response["username"]
     }
 
-    optionalData = {
-        "createdAt": DbData["createdAt"],
-        "wins": data.get("wins"),
-        "draws": data.get("draws"),
-        "losses": data.get("losses")
-    }
-
-    if None in optionalData.values():
-        optionalData = DbData
-
-    response.update(optionalData)
-     
     sqlDB.execute(
-        'UPDATE users SET username=?, email=?, password=?, elo=?, wins=?, draws=?, losses=? WHERE uuid=?',
-        (userName, email, password, elo, response["wins"], response["draws"], response["losses"], uuid)
+        'UPDATE users SET username=?, email=?, password=?, elo=?, wins=?, draws=?, losses=?, profileImage=?, ban=?, admin=?, games=? WHERE uuid=?',
+        (additionalValues["username"], additionalValues["email"], additionalValues["password"], additionalValues["elo"], additionalValues["wins"], additionalValues["draws"], additionalValues["losses"], additionalValues["profileImage"], additionalValues["ban"], additionalValues["admin"], additionalValues["games"], uuid)
     )
 
     sqlDB.commit()
     sqlDB.close()
+
+    response.update(additionalValues)
 
     return jsonify(response), 200
 

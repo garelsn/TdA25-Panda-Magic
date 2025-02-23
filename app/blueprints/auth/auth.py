@@ -11,7 +11,7 @@ auth_bp  = Blueprint('auth', __name__)
 
 SECRET_KEY = "tajne_heslo"
 
-@auth_bp .route("/api/v1/login", methods=["POST"])
+@auth_bp.route("/api/v1/login", methods=["POST"])
 def login():
     data = request.get_json()
     user_input = data.get("username_or_email")
@@ -54,12 +54,16 @@ def login():
     return jsonify({"token": token, "user": user_data}), 200
 
 
-@auth_bp .route("/api/v1/profile", methods=["GET"])
+@auth_bp.route("/api/v1/profile", methods=["GET"])
 def profile():
-    token = request.headers.get("Authorization")
+    auth_header = request.headers.get("Authorization")
 
-    if not token:
-        return jsonify({"message": "Token is missing!"}), 401
+    # Kontrola, zda hlavička existuje a má správný formát
+    if not auth_header or not auth_header.startswith("Bearer "):
+        return jsonify({"message": "Token is missing or invalid!"}), 401
+
+    # Odstranění "Bearer " a získání samotného tokenu
+    token = auth_header.split(" ")[1]
 
     try:
         decoded = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
@@ -71,11 +75,26 @@ def profile():
 
     sqlDB = db.get_db()
     cursor = sqlDB.cursor()
-    cursor.execute("SELECT username, email, profileImage FROM users WHERE uuid=?", (user_id,))
+    cursor.execute("SELECT * FROM users WHERE uuid=?", (user_id,))
     user = cursor.fetchone()
+
 
     if not user:
         return jsonify({"message": "User not found"}), 404
 
-   
-    return jsonify({"username": user[0], "email": user[1], "profileImage": user[2]}), 200
+    
+    
+    column_names = [desc[0] for desc in cursor.description]
+    result = {column_names[i]: user[i] for i in range(len(column_names))}
+    for key, value in result.items():
+            if isinstance(value, bytes):
+                result[key] = value.decode("utf-8")  # Převede bytes na string
+
+        # Kontrola a parsování pole "games"
+    if "games" in result and isinstance(result["games"], str):
+        try:
+            result["games"] = literal_eval(result["games"])
+        except Exception:
+            pass  # Pokud parsování selže, hodnota zůstane nezměněná
+
+    return jsonify(result), 200

@@ -8,6 +8,7 @@ const Profile = () => {
     useEffect(() => {
         const fetchProfile = async () => {
             const token = localStorage.getItem("token");
+            console.log("Token:", token); // Log tokenu
 
             if (!token) {
                 navigate("/login"); // Pokud není token, přesměruj na login
@@ -35,7 +36,7 @@ const Profile = () => {
         localStorage.removeItem("token"); // Smazání tokenu
         navigate("/login"); // Přesměrování na přihlašovací stránku
     };
-
+    console.log(user);
     return (
         <div>
             {user ? (
@@ -45,7 +46,7 @@ const Profile = () => {
                     <p>Email: {user.email}</p>
                     <img src={`http://127.0.0.1:5000/uploads/${user.profileImage}`} alt="Profil" />
                     <br />
-                    {/* <button onClick={handleLogout}>Odhlásit</button> Přidané tlačítko */}
+                    <button onClick={handleLogout}>Odhlásit</button> Přidané tlačítko
                 </>
             ) : (
                 <p>Načítání...</p>

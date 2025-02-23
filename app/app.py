@@ -1,15 +1,8 @@
 import os
-
 from flask import Flask, request, jsonify, send_from_directory
-
 from . import db
-
 from flask_cors import CORS
-
-
-
 import datetime
-
 from .blueprints.routes.routes import routes_bp
 from .blueprints.auth.auth import auth_bp
 from .blueprints.games.games import games_bp
@@ -36,12 +29,8 @@ app.register_blueprint(routes_bp, url_prefix='/')
 app.register_blueprint(auth_bp, url_prefix='/')
 app.register_blueprint(games_bp)
 app.register_blueprint(users_bp)
-
-
 @app.route('/api', methods=['GET'])
 def api(): 
     return jsonify({"organization": "Student Cyber Games"})
-
-
 if __name__ == '__main__':
     app.run(debug=True)

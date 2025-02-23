@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS games (
     updatedAt TEXT NOT NULL
 );
 
+drop table if EXISTS users;
 CREATE TABLE IF NOT EXISTS users (
     uuid TEXT PRIMARY KEY,
     createdAt TEXT NOT NULL,

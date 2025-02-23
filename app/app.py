@@ -14,11 +14,19 @@ from .gameLogic import game_status
 
 from ast import literal_eval
 
-# from flask_cors import CORS
+from flask_cors import CORS
+
+import bcrypt
+import jwt
+
+
+import datetime
+
+from .blueprints.routes import bp
 
 app = Flask(__name__, static_folder='static/react', template_folder='templates')
 
-# CORS(app)
+CORS(app)
 
 
 app.config.from_mapping(
@@ -34,35 +42,7 @@ except OSError:
 db.init_app(app)
 
 
-@app.route('/')
-def hello_world():  # put application's code here
-     return send_from_directory(app.static_folder, 'index.html') # Vrátí HTML soubor z templates
-    # return "Hello TdA 🐼 Magic "
-
-@app.route('/game')
-def gammme():  # put application's code here
-    return send_from_directory(app.static_folder, 'index.html') # Vrátí HTML soubor z templates
-    # return "Hello TdA 🐼 Magic "
-
-
-@app.route('/search')
-def gameSearch():  # put application's code here
-     return send_from_directory(app.static_folder, 'index.html')  # Vrátí HTML soubor z templates
-    # return "Hello TdA 🐼 Magic "
-
-@app.route('/game/edit/<string:uuid>')
-def gameEditUUID(uuid):  # put application's code here
-     return send_from_directory(app.static_folder, 'index.html')  # Vrátí HTML soubor z templates
-    # return "Hello TdA 🐼 Magic "
-
-@app.route('/game/<string:uuid>')
-def gameUUID(uuid):  # put application's code here
-     return send_from_directory(app.static_folder, 'index.html')  # Vrátí HTML soubor z templates
-    # return "Hello TdA 🐼 Magic "
-
-@app.route('/<path:path>')
-def serve_static_files(path):
-    return send_from_directory(app.static_folder, path)
+app.register_blueprint(bp, url_prefix='/')
 
 
 @app.route('/api', methods=['GET'])
@@ -250,10 +230,10 @@ def deleteGameById(uuid):
 
 @app.route("/api/v1/users", methods=["POST"])
 def createPlayer():
-
     data = request.get_json()
 
-    userName, email, password = (data.get("username"), data.get("email"), hash(data.get("password")+"_TDA"))
+    userName, email = data.get("username"), data.get("email")
+    password = data.get("password")
 
     if None in (userName, email, password):
         return jsonify(
@@ -265,20 +245,23 @@ def createPlayer():
 
     sqlDB = db.get_db()
 
-
     cursor = sqlDB.cursor()
     cursor.execute("SELECT email FROM users")
     emails = cursor.fetchall()
 
     emails = [email[0] for email in emails]
 
-    if (email in emails):
+    if email in emails:
         return jsonify(
             {
                 "code": 409,
                 "message": "Bad request: Email already exists"
             }
         ), 400
+
+    # Generování soli a hashování hesla pomocí bcrypt
+    salt = bcrypt.gensalt()  # Generuje náhodnou sůl
+    hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)  # Hashuje heslo
 
     unique_id = str(uuid.uuid4())
     current_time = datetime.utcnow().isoformat(timespec='milliseconds') + "Z"
@@ -295,8 +278,8 @@ def createPlayer():
     }
     
     sqlDB.execute(
-        'INSERT INTO users (uuid, createdAt, loginAt, username, email, password, elo, wins, draws, losses, profileImage, ban, admin, games) VALUES (?, ?,?,?,?,?,?,?,?,?,?,?,?, ?)',
-        (unique_id, current_time, current_time, userName, email, password, additionalValues["elo"], additionalValues["wins"], additionalValues["draws"], additionalValues["losses"], additionalValues["profileImage"], additionalValues["ban"], additionalValues["admin"], additionalValues["games"])
+        'INSERT INTO users (uuid, createdAt, loginAt, username, email, password, elo, wins, draws, losses, profileImage, ban, admin, games) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        (unique_id, current_time, current_time, userName, email, hashed_password, additionalValues["elo"], additionalValues["wins"], additionalValues["draws"], additionalValues["losses"], additionalValues["profileImage"], additionalValues["ban"], additionalValues["admin"], additionalValues["games"])
     )
 
     sqlDB.commit()
@@ -305,8 +288,9 @@ def createPlayer():
     cursor.execute("SELECT * FROM users WHERE uuid=?", (unique_id,))
     DBItem = cursor.fetchone()
 
-    column_names = [ description[0] for description in cursor.description ]
-    response = { column_names[i]: DBItem[i] for i in range(len(column_names)) }
+    column_names = [description[0] for description in cursor.description]
+    # Převod hashovaného hesla z bytes na řetězec
+    response = {column_names[i]: DBItem[i].decode('utf-8') if isinstance(DBItem[i], bytes) else DBItem[i] for i in range(len(column_names))}
 
     sqlDB.close()
 
@@ -447,3 +431,73 @@ if __name__ == '__main__':
 
 
 
+@app.route("/api/v1/profile", methods=["GET"])
+def profile():
+    token = request.headers.get("Authorization")
+
+    if not token:
+        return jsonify({"message": "Token is missing!"}), 401
+
+    try:
+        decoded = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+        user_id = decoded["user_id"]
+    except jwt.ExpiredSignatureError:
+        return jsonify({"message": "Token expired!"}), 401
+    except jwt.InvalidTokenError:
+        return jsonify({"message": "Invalid token!"}), 401
+
+    sqlDB = db.get_db()
+    cursor = sqlDB.cursor()
+    cursor.execute("SELECT username, email, profileImage FROM users WHERE uuid=?", (user_id,))
+    user = cursor.fetchone()
+
+    if not user:
+        return jsonify({"message": "User not found"}), 404
+
+   
+    return jsonify({"username": user[0], "email": user[1], "profileImage": user[2]}), 200
+
+
+SECRET_KEY = "tajne_heslo"
+
+@app.route("/api/v1/login", methods=["POST"])
+def login():
+    data = request.get_json()
+    user_input = data.get("username_or_email")
+    password = data.get("password")
+
+    if not user_input or not password:
+        return jsonify({"message": "Missing username/email or password"}), 400
+
+    sqlDB = db.get_db()
+    cursor = sqlDB.cursor()
+
+    # Najdi uživatele podle uživatelského jména nebo e-mailu
+    cursor.execute("SELECT * FROM users WHERE username=? OR email=?", (user_input, user_input))
+    user = cursor.fetchone()
+
+    if not user:
+        return jsonify({"message": "User not found"}), 404
+
+    # Získání názvů sloupců
+    column_names = [description[0] for description in cursor.description]
+
+    # Ověření hesla
+    stored_password = user[column_names.index("password")]  # Získání hesla podle názvu sloupce
+    if not bcrypt.checkpw(password.encode("utf-8"), stored_password):  
+        return jsonify({"message": "Invalid credentials"}), 401
+
+    # Generování JWT tokenu
+    token = jwt.encode(
+        {
+            "user_id": user[column_names.index("uuid")],
+            "exp": datetime.datetime.utcnow() + datetime.timedelta(days=1)  # 1 den místo 1 hodiny
+        },
+        SECRET_KEY,
+        algorithm="HS256"
+    )
+
+    # Převod výsledků z databáze do JSON formátu
+    user_data = {column_names[i]: (user[i].decode("utf-8") if isinstance(user[i], bytes) else user[i]) for i in range(len(user))}
+
+    return jsonify({"token": token, "user": user_data}), 200

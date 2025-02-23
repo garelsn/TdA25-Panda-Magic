@@ -12,7 +12,10 @@ def hello_world():  # put application's code here
 def gammme():  # put application's code here
     return send_from_directory(current_app.static_folder, 'index.html') # Vrátí HTML soubor z templates
     # return "Hello TdA 🐼 Magic "
-
+@routes_bp.route('/line')
+def line():  # put application's code here
+    return send_from_directory(current_app.static_folder, 'index.html') # Vrátí HTML soubor z templates
+    # return "Hello TdA 🐼 Magic "
 
 @routes_bp.route('/search')
 def gameSearch():  # put application's code here

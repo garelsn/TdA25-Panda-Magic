@@ -9,6 +9,9 @@ RUN pip install pipenv
 COPY Pipfile .
 COPY Pipfile.lock .
 
+COPY requirements.txt requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
 RUN pipenv install --system --deploy
 
 COPY . .

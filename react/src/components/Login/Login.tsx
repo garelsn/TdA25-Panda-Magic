@@ -4,11 +4,11 @@ const Login = () => {
     const [formData, setFormData] = useState({ username_or_email: "", password: "" });
     const [error, setError] = useState("");
 
-    const handleChange = (e) => {
+    const handleChange = (e:any) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e:any) => {
         e.preventDefault();
         setError("");
 
@@ -24,7 +24,7 @@ const Login = () => {
 
             localStorage.setItem("token", data.token);
             alert("Přihlášení úspěšné!");
-        } catch (err) {
+        } catch (err:any) {
             setError(err.message);
         }
     };

@@ -1,7 +1,7 @@
 import os
 from flask import Flask, request, jsonify, send_from_directory
 from . import db
-from flask_cors import CORS
+# from flask_cors import CORS
 import datetime
 from .blueprints.routes.routes import routes_bp
 from .blueprints.auth.auth import auth_bp
@@ -17,7 +17,7 @@ import uuid
 app = Flask(__name__, static_folder='static/react', template_folder='templates')
 socketio = SocketIO(app, cors_allowed_origins="*")
 
-CORS(app)
+# CORS(app)
 
 
 app.config.from_mapping(

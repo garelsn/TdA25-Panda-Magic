@@ -6,61 +6,69 @@ import bcrypt
 
 @users_bp.route("/<uuid>", methods=["PUT"])
 def UpdateUserById(uuid):
-    
     data = request.get_json()
 
     sqlDB = db.get_db()
-
     cursor = sqlDB.cursor()
-    cursor.execute("SELECT email FROM users")
-    emails = cursor.fetchall()
 
-    emails = [email[0] for email in emails]
-
-    if (data.get("email") in emails):
-        return jsonify(
-            {
-                "code": 409,
-                "message": "Bad request: Email already exists"
-            }
-        ), 400
-    
+    # Získání existujícího uživatele
     cursor.execute("SELECT * FROM users WHERE uuid=?", (uuid,))
     DBItem = cursor.fetchone()
 
     if DBItem is None:
-        return jsonify(
-            {
-                "code": 404,
-                "message": "Resource not found"
-            }
-        ), 404
+        return jsonify({"code": 404, "message": "Resource not found"}), 404
 
-    column_names = [ description[0] for description in cursor.description ]
-    response = { column_names[i]: DBItem[i] for i in range(len(column_names)) }
-    
-    additionalValues = {
-        "elo": data.get("elo") if data.get("elo") is not None else response["elo"],
-        "wins": data.get("wins") if data.get("wins") is not None else response["wins"],
-        "draws": data.get("draws") if data.get("draws") is not None else response["draws"],
-        "losses": data.get("losses") if data.get("losses") is not None else response["losses"],
-        "profileImage": data.get("profileImage") if data.get("profileImage") is not None else response["profileImage"],
-        "ban": data.get("ban") if data.get("ban") is not None else response["ban"],
-        "admin": data.get("admin") if data.get("admin") is not None else response["admin"],
-        "games": data.get("games") if data.get("games") is not None else response["games"],
-        "password": data.get("password") if data.get("password") is not None else response["games"],
-        "email": data.get("email") if data.get("email") is not None else response["email"],
-        "username": data.get("username") if data.get("username") is not None else response["username"]
+    column_names = [desc[0] for desc in cursor.description]
+    existing_user = {column_names[i]: DBItem[i] for i in range(len(column_names))}
+
+    # Kontrola unikátnosti emailu, pokud je změněn
+    new_email = data.get("email", existing_user["email"])
+    if new_email != existing_user["email"]:
+        cursor.execute("SELECT COUNT(*) FROM users WHERE email=?", (new_email,))
+        if cursor.fetchone()[0] > 0:
+            return jsonify({"code": 409, "message": "Bad request: Email already exists"}), 409
+
+    # Kontrola unikátnosti username, pokud je změněn
+    new_username = data.get("username", existing_user["username"])
+    if new_username != existing_user["username"]:
+        cursor.execute("SELECT COUNT(*) FROM users WHERE username=?", (new_username,))
+        if cursor.fetchone()[0] > 0:
+            return jsonify({"code": 409, "message": "Bad request: Username already exists"}), 409
+
+    # Hashování nového hesla, pokud je předáno
+    if "password" in data:
+        hashed_password = bcrypt.hashpw(data["password"].encode('utf-8'), bcrypt.gensalt())
+    else:
+        hashed_password = existing_user["password"]
+
+    # Aktualizace dat
+    updated_values = {
+        "username": new_username,
+        "email": new_email,
+        "password": hashed_password,
+        "elo": data.get("elo", existing_user["elo"]),
+        "wins": data.get("wins", existing_user["wins"]),
+        "draws": data.get("draws", existing_user["draws"]),
+        "losses": data.get("losses", existing_user["losses"]),
+        "profileImage": data.get("profileImage", existing_user["profileImage"]),
+        "ban": data.get("ban", existing_user["ban"]),
+        "admin": data.get("admin", existing_user["admin"]),
+        "games": data.get("games", existing_user["games"]),
     }
 
+    # Aktualizace v databázi
     sqlDB.execute(
         'UPDATE users SET username=?, email=?, password=?, elo=?, wins=?, draws=?, losses=?, profileImage=?, ban=?, admin=?, games=? WHERE uuid=?',
-        (additionalValues["username"], additionalValues["email"], additionalValues["password"], additionalValues["elo"], additionalValues["wins"], additionalValues["draws"], additionalValues["losses"], additionalValues["profileImage"], additionalValues["ban"], additionalValues["admin"], additionalValues["games"], uuid)
+        (updated_values["username"], updated_values["email"], updated_values["password"],
+         updated_values["elo"], updated_values["wins"], updated_values["draws"],
+         updated_values["losses"], updated_values["profileImage"], updated_values["ban"],
+         updated_values["admin"], updated_values["games"], uuid)
     )
-
     sqlDB.commit()
     sqlDB.close()
 
-    response.update(additionalValues)
-
+    # Vytvoření odpovědi
+    response = existing_user.copy()
+    response.update(updated_values)
+    response = {col: (val.decode('utf-8') if isinstance(val, bytes) else val) for col, val in zip(column_names, DBItem)}
     return jsonify(response), 200

@@ -22,15 +22,17 @@ def returnUserById(uuid):
 
     column_names = [desc[0] for desc in cursor.description]
     result = {column_names[i]: DBItem[i] for i in range(len(column_names))}
-    for user in result:
-        for key, value in result.items():
-            if isinstance(value, bytes):
-                user[key] = value.decode("utf-8")  # Převede bytes na string
 
-        if "games" in user and isinstance(user["games"], str):
-            try:
-                user["games"] = literal_eval(user["games"])
-            except Exception:
-                pass  # Když se nepovede, nevadí
+    # Iterace přes položky slovníku result
+    for key, value in result.items():
+        if isinstance(value, bytes):
+            result[key] = value.decode("utf-8")  # Převede bytes na string
+
+    # Kontrola a parsování pole "games"
+    if "games" in result and isinstance(result["games"], str):
+        try:
+            result["games"] = literal_eval(result["games"])
+        except Exception:
+            pass  # Pokud parsování selže, hodnota zůstane nezměněná
 
     return jsonify(result), 200

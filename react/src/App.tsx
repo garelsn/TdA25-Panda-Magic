@@ -1,11 +1,13 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import GamePageEdit from "./components/Game/GamePageEdit"
 import GamePagePlay from "./components/Game/GamePagePlay"
-import FirstGame from "./components/Game/FirstGame"
+// import FirstGame from "./components/Game/FirstGame"
 import Home from "./components/Home/Home"
 import Search from "./components/Search/Search";
 import Login from "./components/Login/Login";
 import Profile from "./components/Profile/Profile";
+import GameQueue from "./components/GameQueue/GameQueue";
+import TestGame from "./components/Game/TestGame";
 
 function App() {
   return (
@@ -14,10 +16,12 @@ function App() {
         <Route path="/" element={<Home />}/>
         <Route path="/game/edit/:uuid" element={<GamePageEdit />} />
         <Route path="/game/:uuid" element={<GamePagePlay />} />
-        <Route path="/game" element={<FirstGame/>} />
+        <Route path="/game" element={<TestGame/>} />
+        {/* <Route path="/game" element={<FirstGame/>} /> */}
         <Route path="/search" element={<Search/>} />
         <Route path="/login" element={<Login/>} />
         <Route path="/profile" element={<Profile/>}/>
+        <Route path="/line" element={<GameQueue/>}/>
         {/* Ostatní routy */}
       </Routes>
     </Router>

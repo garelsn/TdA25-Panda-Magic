@@ -1,8 +1,14 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom"; // Pro přesměrování
 
+interface User {
+    username: string;
+    email: string;
+    profileImage: string;
+}
+
 const Profile = () => {
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState<User | null>(null);
     const navigate = useNavigate(); // Hook pro přesměrování
 
     useEffect(() => {

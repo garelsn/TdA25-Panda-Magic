@@ -5,7 +5,7 @@ import uuid
 from datetime import datetime 
 import bcrypt
 
-@users_bp.route("/", methods=["POST"])
+@users_bp.route("", methods=["POST"])
 def createPlayer():
     data = request.get_json()
 

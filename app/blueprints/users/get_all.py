@@ -3,7 +3,7 @@ from .users import users_bp
 from app.db import get_db  # Import opraven podle tvé struktury
 import ast
 
-@users_bp.route("/", methods=["GET"])
+@users_bp.route("", methods=["GET"])
 def returnAllUsers():
     sqlDB = get_db()
     cursor = sqlDB.cursor()

@@ -5,6 +5,7 @@ import SaveForm from "./Components/SaveForm";
 import BannerSm from "../GlobalComponents/BannerSm";
 import ButtonLink from "../GlobalComponents/ButtonLink";
 import WinAnimation from "../WinAnimation/WinAnimation";
+import { GetUseUser } from "../../Fetch/GetUseUser";
 
 function FirstGame() {
   const createEmptyBoard = (rows: number, cols: number) =>
@@ -24,18 +25,19 @@ function FirstGame() {
   const socketUrl = process.env.NODE_ENV === 'development' 
   ? 'http://127.0.0.1:5000' 
   : '/';
+  const { user, isLoading, error } = GetUseUser();
+  console.log(user)
 
   // Socket se vytvoří jen jednou při mountu komponenty
   console.log(winner)
   useEffect(() => {
-    const newSocket = io(socketUrl, {
-        transports: ["websocket"]
-      });
+    if (!user || isLoading) return; 
+    const newSocket = io(socketUrl);
     setSocket(newSocket);
 
     newSocket.on("connect", () => {
       console.log("Připojeno k Socket.IO serveru");
-      newSocket.emit("join_queue");
+      newSocket.emit("join_queue", { uuid: user.uuid});
     });
 
     newSocket.on("game_started", (data) => {
@@ -44,7 +46,7 @@ function FirstGame() {
       setPlayer(player);
       localStorage.setItem("gameId", game_id);
       localStorage.setItem("player", player);
-      console.log("Hra spuštěna, game_id:", game_id, "player:", player);
+      console.log("Hra začala! ID hry:", data.game_id, "Hráč:", data.player, "user_uuid:", data.user_uuid, "username", data.username);
     });
 
     newSocket.on("move_made", (data) => {
@@ -69,6 +71,13 @@ function FirstGame() {
   // Odpojení socketu, když hra skončí (volitelně)
   useEffect(() => {
     if (isGameOver && socket) {
+      socket.emit("game_over", {"game_id":gameId, winner });
+      socket.on("game_over", (data) => {
+        console.log("Hra skončila, data přijatá od serveru:", data);
+        console.log("Hra skončila, vítěz:", data.winner);
+        socket.disconnect();
+        console.log("Socket byl odpojen, protože hra skončila.");
+    });
       socket.disconnect();
       console.log("Socket byl odpojen, protože hra skončila.");
     }

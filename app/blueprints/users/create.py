@@ -10,7 +10,7 @@ def createPlayer():
     data = request.get_json()
 
     # Kontrola povinných parametrů
-    required_fields = ["username", "email", "password"]
+    required_fields = ["username", "email", "password", "elo"]
     if not all(field in data for field in required_fields):
         return jsonify({"code": 400, "message": "Bad request: Missing required parameters"}), 400
 

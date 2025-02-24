@@ -9,6 +9,12 @@ const GameQueue = () => {
   ? 'http://127.0.0.1:5000' 
   : '/';
   useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Musíte být přihlášeni, abyste se mohli připojit do hry.");
+      navigate("/"); // Přesměrování na hlavní stránku
+      return;
+    }
     const newSocket = io(socketUrl);
 
     newSocket.emit("join_queue");

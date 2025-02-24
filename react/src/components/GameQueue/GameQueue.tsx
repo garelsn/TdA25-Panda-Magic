@@ -6,31 +6,37 @@ const GameQueue = () => {
   const [gameId, setGameId] = useState<string | null>(null);
   const navigate = useNavigate();
   const socketUrl = process.env.NODE_ENV === 'development' 
-  ? 'http://127.0.0.1:5000' 
-  : '/';
+    ? 'http://127.0.0.1:5000' 
+    : '/';
+
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    // Během vývoje (localhost) se bude používat falešný token, pokud není přihlášený uživatel
+    const token = localStorage.getItem("token") || (process.env.NODE_ENV === 'development' ? "fakeToken" : null);
+
     if (!token) {
-      alert("Musíte být přihlášeni, abyste se mohli připojit do hry.");
-      navigate("/"); // Přesměrování na hlavní stránku
-      return;
+      if (process.env.NODE_ENV !== 'development') {
+        alert("Musíte být přihlášeni, abyste se mohli připojit do hry.");
+        navigate("/"); // Přesměrování na hlavní stránku
+        return;
+      }
     }
+
     const newSocket = io(socketUrl);
 
     newSocket.emit("join_queue");
 
     newSocket.on("game_started", (data) => {
       setGameId(data.game_id);
-      localStorage.setItem("gameId", data.game_id); // Uložíme ID hry
-      localStorage.setItem("player", data.player);  // Uložíme roli hráče ("X" nebo "O")
+      localStorage.setItem("gameId", data.game_id);
+      localStorage.setItem("player", data.player);
       console.log("Hra začala! ID hry:", data.game_id, "Hráč:", data.player);
-      navigate("/game"); // Přesměrujeme na herní desku
+      navigate("/game"); // Přesměrování na herní stránku
     });
 
     return () => {
       newSocket.disconnect();
     };
-  }, [navigate]);
+  }, [navigate, socketUrl]);
 
   return (
     <div>

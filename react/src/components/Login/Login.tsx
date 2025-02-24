@@ -4,11 +4,11 @@ const Login = () => {
     const [formData, setFormData] = useState({ username_or_email: "", password: "" });
     const [error, setError] = useState("");
 
-    const handleChange = (e:any) => {
+    const handleChange = (e: any) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = async (e:any) => {
+    const handleSubmit = async (e: any) => {
         e.preventDefault();
         setError("");
 
@@ -24,19 +24,41 @@ const Login = () => {
 
             localStorage.setItem("token", data.token);
             alert("Přihlášení úspěšné!");
-        } catch (err:any) {
+        } catch (err: any) {
             setError(err.message);
         }
     };
 
     return (
         <div>
-            <h2>Přihlášení</h2>
-            {error && <p style={{ color: "red" }}>{error}</p>}
-            <form onSubmit={handleSubmit}>
-                <input type="text" name="username_or_email" placeholder="Uživatelské jméno nebo email" onChange={handleChange} required />
-                <input type="password" name="password" placeholder="Heslo" onChange={handleChange} required />
-                <button type="submit">Přihlásit se</button>
+            {error && <p className="text-red-500 text-center">{error}</p>}
+            <form onSubmit={handleSubmit} className="flex flex-col items-center">
+                <label className="text-white font-medium mb-1 mt-3">Uživatelské jméno nebo e-mail</label>
+                <input
+                    type="text"
+                    name="username_or_email"
+                    className="w-[80%] h-10 border-2 border-black rounded-full bg-[#D9D9D9] px-4 mb-4"
+                    onChange={handleChange}
+                    required
+                />
+
+                <label className="text-white font-medium mb-1">Heslo</label>
+                <input
+                    type="password"
+                    name="password"
+                    className="w-[80%] h-10 border-2 border-black rounded-full bg-[#D9D9D9] px-4"
+                    onChange={handleChange}
+                    required
+                />
+
+                {/* Odkaz na obnovu hesla */}
+                <div className="w-[80%] text-right mt-1 mb-4">
+                    <a href="/reset-password" className="text-white text-sm hover:underline">
+                        Zapomněli jste heslo?
+                    </a>
+                </div>
+
+                <button type="submit" className="hidden">Přihlásit se</button>
             </form>
         </div>
     );

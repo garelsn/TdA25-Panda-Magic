@@ -65,4 +65,4 @@ def createPlayer():
     response = {col: (val.decode('utf-8') if isinstance(val, bytes) else val) for col, val in zip(column_names, DBItem)}
 
     sqlDB.close()
-    return jsonify(response), 201
+    return jsonify(response), 200

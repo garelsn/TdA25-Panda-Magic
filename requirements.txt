@@ -1,3 +1,4 @@
 bcrypt
 PyJWT
 flask_socketio
+CORS

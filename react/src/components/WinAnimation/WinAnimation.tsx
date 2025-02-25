@@ -28,10 +28,27 @@ const WinAnimation: React.FC<BoardProps> = ({ board, setIsGameOver, setWinner, s
     socket.on("game_started", () => {
       setIsGameOver(false);
       setWinner(null);
+      setWinnerState(null);
       setIsConfettiActive(false);
       setShowWinModal(false);
     });
-  }, [socket]);
+
+    // Přidání event listeneru pro restart hry
+    socket.on("restart_game", () => {
+      setIsGameOver(false);
+      setWinner(null);
+      setWinnerState(null);
+      setIsConfettiActive(false);
+      setShowWinModal(false);
+    });
+
+    // Cleanup
+    return () => {
+      if (socket) {
+        socket.off("restart_game");
+      }
+    };
+  }, [socket, setIsGameOver, setWinner, setShowWinModal]);
 
   useEffect(() => {
     const foundWinner = checkWinner(board);
@@ -42,7 +59,7 @@ const WinAnimation: React.FC<BoardProps> = ({ board, setIsGameOver, setWinner, s
       setIsConfettiActive(true);
       setShowWinModal(true); 
     }
-  }, [board]);
+  }, [board, setWinner, setIsGameOver, setShowWinModal]);
 
   return (
     <>

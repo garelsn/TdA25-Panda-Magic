@@ -21,11 +21,24 @@ function FirstGame() {
   });
   const [isGameOver, setIsGameOver] = useState(false);
   const [winner, setWinner] = useState<"X" | "O" | null>(null);
-  const [showWinModal, setShowWinModal] = useState(true);
+  const [showWinModal, setShowWinModal] = useState(false);
   const socketUrl = process.env.NODE_ENV === 'development' 
   ? 'http://127.0.0.1:5000' 
   : window.location.origin;
   const { user, isLoading } = GetUseUser();
+
+  // Funkce pro kompletní reset hry
+  const resetGame = useCallback(() => {
+    setBoard(createEmptyBoard(15, 15));
+    setCurrentPlayer("X");
+    setIsGameOver(false);
+    setWinner(null);
+    setShowWinModal(false);
+    setImageAndText({
+      src: "./zarivka_playing_bile.svg",
+      text: "Hraje se..."
+    });
+  }, []);
 
   // Setup socket events
   const setupSocketEvents = useCallback((newSocket: Socket) => {
@@ -54,19 +67,19 @@ function FirstGame() {
 
     newSocket.on("game_started", (data) => {
       console.log("Hra začala, data:", data);
+      // Nejprve resetujeme hru
+      resetGame();
+      // Poté nastavíme nové hodnoty
       setGameId(data.game_id);
       setPlayer(data.player);
       localStorage.setItem("gameId", data.game_id);
       localStorage.setItem("player", data.player);
-      setShowWinModal(false);
-      setBoard(createEmptyBoard(15, 15));
-      setIsGameOver(false);
-      setWinner(null);
-      setCurrentPlayer("X"); // Vždy začíná hráč X
     });
 
     newSocket.on("move_made", (data) => {
       console.log("Tah proveden:", data);
+      if (isGameOver) return; // Ignorujeme tahy, pokud je hra ukončena
+      
       setBoard(prevBoard => {
         const updatedBoard = [...prevBoard];
         updatedBoard[data.row][data.col] = data.player;
@@ -78,17 +91,9 @@ function FirstGame() {
     // Přidání event listeneru pro restart hry
     newSocket.on("restart_game", () => {
       console.log("Restartování hry");
-      setBoard(createEmptyBoard(15, 15));
-      setCurrentPlayer("X"); // Vždy začíná hráč X
-      setIsGameOver(false);
-      setWinner(null);
-      setImageAndText({
-        src: "./zarivka_playing_bile.svg",
-        text: "Hraje se..."
-      });
-      setShowWinModal(false);
+      resetGame();
     });
-  }, [user]);
+  }, [user, resetGame]);
 
   // Initialize socket connection
   useEffect(() => {
@@ -150,6 +155,7 @@ function FirstGame() {
   }, [isGameOver, socket, socketConnected, gameId, winner]);
 
   const handleCellClick = (row: number, col: number) => {
+    // Kontrola, že hra neskončila a že je hráč na tahu
     if (board[row][col] || isGameOver || currentPlayer !== player) return;
     
     setBoard(prevBoard => {

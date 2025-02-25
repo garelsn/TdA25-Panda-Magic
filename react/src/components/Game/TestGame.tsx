@@ -97,7 +97,7 @@ function FirstGame() {
     
     console.log("Inicializace Socket.IO spojení...");
     const newSocket = io(socketUrl, { 
-      transports: ['polling'],
+      transports: ['websocket', 'polling'], // Zkusí WebSocket, pokud selže, použije polling
       reconnection: true,
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,

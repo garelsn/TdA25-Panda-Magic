@@ -7,8 +7,8 @@ const GameQueue = () => {
   const [gameId, setGameId] = useState<string | null>(null);
   const navigate = useNavigate();
   const socketUrl = process.env.NODE_ENV === 'development' 
-    ? 'http://127.0.0.1:5000' 
-    : '/';
+  ? 'http://127.0.0.1:5000' 
+  : window.location.origin;
   const { user, isLoading } = GetUseUser();
   
   useEffect(() => {

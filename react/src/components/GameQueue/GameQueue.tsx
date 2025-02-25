@@ -15,13 +15,12 @@ const GameQueue = () => {
     navigate("/"); // Přesměrování na hlavní stránku
     return;
   }
-  const { user } = GetUseUser();
+  const { user, isLoading } = GetUseUser();
   console.log(user)
   useEffect(() => {
-
-    const newSocket = io(socketUrl);
-
-    newSocket.emit("join_queue", { uuid: "F"});
+    const newSocket = io(socketUrl, { transports: ["websocket"] });
+    if (!user || isLoading) return; 
+    newSocket.emit("join_queue", { uuid: user.uuid });
 
     newSocket.on("game_started", (data) => {
       setGameId(data.game_id);

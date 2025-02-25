@@ -15,7 +15,7 @@ const GameQueue = () => {
     navigate("/"); // Přesměrování na hlavní stránku
     return;
   }
-  const { user, isLoading, error } = GetUseUser();
+  const { user } = GetUseUser();
   console.log(user)
   useEffect(() => {
 

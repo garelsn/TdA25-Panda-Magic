@@ -3,7 +3,7 @@ import { GetUseUser } from "../../Fetch/GetUseUser"; // Funkce pro získání u�
 
 const Profile = () => {
     const navigate = useNavigate(); // Hook pro přesměrování
-    const { user, isLoading, error } = GetUseUser();
+    const { user } = GetUseUser();
 
     // Funkce pro odhlášení
     const handleLogout = () => {

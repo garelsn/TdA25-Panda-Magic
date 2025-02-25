@@ -1,7 +1,7 @@
 import os
 from flask import Flask, request, jsonify, send_from_directory
 from . import db
-# from flask_cors import CORS
+from flask_cors import CORS
 import datetime
 from .blueprints.routes.routes import routes_bp
 from .blueprints.auth.auth import auth_bp
@@ -20,7 +20,15 @@ from .function.Elo import think_different_elo
 app = Flask(__name__, static_folder='static/react', template_folder='templates')
 socketio = SocketIO(app, cors_allowed_origins="*" )
 
-# CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})
+socketio = SocketIO(
+    app, 
+    cors_allowed_origins="*",
+    async_mode="threading",
+    logger=True,  # Enable logging
+    engineio_logger=True  # Enable engine.io logging
+)
+
 
 
 app.config.from_mapping(
@@ -214,5 +222,5 @@ def handle_rematch_request(data):
 #  # Hru můžeme po ukončení odstranit
 #         del game_locks[game_id]
 if __name__ == '__main__':
-    app.run(debug=False)
+    socketio.run(app, debug=True, host='0.0.0.0', port=5000, allow_unsafe_werkzeug=True)
     

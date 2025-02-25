@@ -23,8 +23,8 @@ function FirstGame() {
   const [winner, setWinner] = useState<"X" | "O" | null>(null);
   const [showWinModal, setShowWinModal] = useState(true);
   const socketUrl = process.env.NODE_ENV === 'development' 
-    ? 'http://127.0.0.1:5000' 
-    : '/';
+  ? 'http://127.0.0.1:5000' 
+  : window.location.origin;
   const { user, isLoading } = GetUseUser();
 
   // Setup socket events

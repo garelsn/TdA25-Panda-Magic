@@ -42,7 +42,7 @@ function FirstGame() {
 
   useEffect(() => {
     if (!user || isLoading) return; 
-    const newSocket = io(socketUrl);
+    const newSocket = io(socketUrl, { transports: ["websocket"] });
     setSocket(newSocket);
 
     newSocket.on("connect", () => {

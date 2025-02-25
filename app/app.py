@@ -18,7 +18,7 @@ from .function.get_user_by_uuid import get_user_by_uuid
 from .function.Elo import think_different_elo
 
 app = Flask(__name__, static_folder='static/react', template_folder='templates')
-socketio = SocketIO(app, cors_allowed_origins="*")
+socketio = SocketIO(app, cors_allowed_origins="*" )
 
 # CORS(app)
 

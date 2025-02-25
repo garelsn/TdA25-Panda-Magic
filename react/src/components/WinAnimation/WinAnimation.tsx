@@ -16,56 +16,85 @@ type BoardProps = {
   setShowWinModal: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const WinAnimation: React.FC<BoardProps> = ({ board, setIsGameOver, setWinner, socket, gameId, player, showWinModal, setShowWinModal }) => {
+const WinAnimation: React.FC<BoardProps> = ({ 
+  board, 
+  setIsGameOver, 
+  setWinner, 
+  socket, 
+  gameId, 
+  player, 
+  showWinModal, 
+  setShowWinModal 
+}) => {
   const { width, height } = useWindowSize();
   const { rematchRequested, opponentWantsRematch, requestRematch } = useRematch(socket, gameId, player);
   const [isConfettiActive, setIsConfettiActive] = useState(false);
-  const [winner, setWinnerState] = useState<"X" | "O" | null>(null);
+  const [localWinner, setLocalWinner] = useState<"X" | "O" | null>(null);
+
+  // Reset funkce
+  const resetWinState = () => {
+    console.log("Resetuji vítězný stav");
+    setIsGameOver(false);
+    setWinner(null);
+    setLocalWinner(null);
+    setIsConfettiActive(false);
+    setShowWinModal(false);
+  };
 
   useEffect(() => {
     if (!socket) return;
 
-    socket.on("game_started", () => {
-      setIsGameOver(false);
-      setWinner(null);
-      setWinnerState(null);
-      setIsConfettiActive(false);
-      setShowWinModal(false);
-    });
+    const handleGameStarted = () => {
+      console.log("WinAnimation: Nová hra začala, resetuji stavy");
+      resetWinState();
+    };
 
-    // Přidání event listeneru pro restart hry
-    socket.on("restart_game", () => {
-      setIsGameOver(false);
-      setWinner(null);
-      setWinnerState(null);
-      setIsConfettiActive(false);
-      setShowWinModal(false);
-    });
+    const handleRestartGame = () => {
+      console.log("WinAnimation: Hra restartována, resetuji stavy");
+      resetWinState();
+    };
+
+    // Přidání event listenerů
+    socket.on("game_started", handleGameStarted);
+    socket.on("restart_game", handleRestartGame);
 
     // Cleanup
     return () => {
       if (socket) {
-        socket.off("restart_game");
+        socket.off("game_started", handleGameStarted);
+        socket.off("restart_game", handleRestartGame);
       }
     };
   }, [socket, setIsGameOver, setWinner, setShowWinModal]);
 
   useEffect(() => {
     const foundWinner = checkWinner(board);
-    if (foundWinner) {
+    if (foundWinner && !localWinner) {
+      console.log(`Nalezen vítěz: ${foundWinner}`);
       setWinner(foundWinner);
-      setWinnerState(foundWinner);
+      setLocalWinner(foundWinner);
       setIsGameOver(true);
       setIsConfettiActive(true);
-      setShowWinModal(true); 
+      setShowWinModal(true);
+    } else if (!foundWinner && board.some(row => row.some(cell => cell !== ""))) {
+      // Hra probíhá - není vítěz, ale na desce jsou tahy
+      console.log("Hra probíhá, žádný vítěz");
     }
-  }, [board, setWinner, setIsGameOver, setShowWinModal]);
+  }, [board, setWinner, setIsGameOver, setShowWinModal, localWinner]);
+
+  // Pokud se změní gameId, měli bychom resetovat stav vítězství
+  useEffect(() => {
+    if (gameId) {
+      console.log("Změna gameId, resetuji stavy");
+      resetWinState();
+    }
+  }, [gameId]);
 
   return (
     <>
-      {winner && showWinModal && (
+      {localWinner && showWinModal && (
         <WinModal 
-          winner={winner} 
+          winner={localWinner} 
           rematchRequested={rematchRequested} 
           opponentWantsRematch={opponentWantsRematch} 
           requestRematch={requestRematch} 

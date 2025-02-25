@@ -86,6 +86,7 @@ def handle_join_queue(data):
             active_games[game_id] = {
                 "X": {"sid": player1["sid"], "uuid": player1["uuid"], "username": username1},
                 "O": {"sid": player2["sid"], "uuid": player2["uuid"], "username": username2},
+                "processed": False  # Přidáno nové pole pro sledování stavu hry
             }
             # Posíláme obě UUID správným hráčům
             socketio.emit("game_started", {
@@ -109,8 +110,14 @@ def handle_make_move(data):
     row = data["row"]
     col = data["col"]
     player = data["player"]
-    # Ověření tahu by tu mělo být (např. zda je políčko volné), ale pro jednoduchost...
-    socketio.emit("move_made", {"row": row, "col": col, "player": player}, room=game_id)
+    
+    # Přidejte kontrolu, zda je hra aktivní a není označena jako zpracovaná
+    if game_id in active_games and not active_games[game_id].get("processed", False):
+        # Ověření tahu by tu mělo být (např. zda je políčko volné), ale pro jednoduchost...
+        socketio.emit("move_made", {"row": row, "col": col, "player": player}, room=game_id)
+    else:
+        # Volitelně upozorněte hráče, že hra již skončila
+        socketio.emit("game_error", {"message": "Tato hra již byla ukončena"}, room=request.sid)
     
 
 game_locks = {}
@@ -197,6 +204,9 @@ def handle_game_over(data):
             "loser_elo": loser_elo
         }, room=game_id)
 
+        # Zámky neodstraňujeme, protože mohou být potřeba pro rematch
+        # ale po určité době bychom mohli vyčistit aktivní hry a zámky, které nejsou používány
+
 rematch_requests = {}  # Uložíme žádosti o odvetu
 
 @socketio.on("rematch_request")
@@ -217,10 +227,65 @@ def handle_rematch_request(data):
 
     # Pokud oba hráči souhlasili, začneme novou hru
     if len(rematch_requests[game_id]) == 2:
-        del rematch_requests[game_id]  # Vyčistíme žádosti
-        socketio.emit("game_started", {"game_id": game_id}, room=game_id)
-#  # Hru můžeme po ukončení odstranit
-#         del game_locks[game_id]
+        # Vyčistíme žádosti
+        del rematch_requests[game_id]
+        
+        # Resetujeme stav hry
+        if game_id in active_games:
+            active_games[game_id]["processed"] = False
+            
+        # Informujeme klienty o novém začátku hry
+        player1_sid = active_games[game_id]["X"]["sid"]
+        player2_sid = active_games[game_id]["O"]["sid"]
+        player1_uuid = active_games[game_id]["X"]["uuid"]
+        player2_uuid = active_games[game_id]["O"]["uuid"]
+        player1_username = active_games[game_id]["X"]["username"]
+        player2_username = active_games[game_id]["O"]["username"]
+        
+        # Při rematchi prohodíme role X a O
+        active_games[game_id] = {
+            "X": {"sid": player2_sid, "uuid": player2_uuid, "username": player2_username},
+            "O": {"sid": player1_sid, "uuid": player1_uuid, "username": player1_username},
+            "processed": False
+        }
+        
+        socketio.emit("game_started", {
+            "game_id": game_id, 
+            "player": "X",
+            "user_uuid": player2_uuid,
+            "username": player2_username
+        }, room=player2_sid)
+        
+        socketio.emit("game_started", {
+            "game_id": game_id, 
+            "player": "O",
+            "user_uuid": player1_uuid,
+            "username": player1_username
+        }, room=player1_sid)
+
+# Funkce pro čištění starých dat
+def cleanup_old_games():
+    while True:
+        time.sleep(3600)  # Každou hodinu
+        current_time = time.time()
+        
+        # Vyčistit staré hry a zámky
+        games_to_remove = []
+        for game_id, game_data in active_games.items():
+            if game_data.get("last_activity", 0) < current_time - 3600:  # Starší než 1 hodina
+                games_to_remove.append(game_id)
+        
+        for game_id in games_to_remove:
+            if game_id in active_games:
+                del active_games[game_id]
+            if game_id in game_locks:
+                del game_locks[game_id]
+            if game_id in rematch_requests:
+                del rematch_requests[game_id]
+
+# Spustíme čistící vlákno
+cleanup_thread = threading.Thread(target=cleanup_old_games, daemon=True)
+cleanup_thread.start()
+
 if __name__ == '__main__':
     socketio.run(app, debug=True, host='0.0.0.0', port=5000, allow_unsafe_werkzeug=True)
-    

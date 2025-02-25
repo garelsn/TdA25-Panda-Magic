@@ -26,7 +26,7 @@ const GameQueue = () => {
     console.log("Setting up socket connection with user:", user);
     
     const newSocket = io(socketUrl, { 
-      transports: ['polling'],
+      transports: ['websocket', 'polling'], // Zkusí WebSocket, pokud selže, použije polling
       reconnection: true,
       reconnectionAttempts: 5,
       reconnectionDelay: 1000

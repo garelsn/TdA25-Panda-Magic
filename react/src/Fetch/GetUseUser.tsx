@@ -14,7 +14,7 @@ export function GetUseUser() {
     const navigate = useNavigate();
     const socketUrl = process.env.NODE_ENV === 'development' 
     ? 'http://127.0.0.1:5000' 
-    : '/';
+    : '';
   
     useEffect(() => {
       const fetchProfile = async () => {

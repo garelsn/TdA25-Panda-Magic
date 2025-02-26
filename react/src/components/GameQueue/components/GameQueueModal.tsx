@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import io from "socket.io-client";
 import { useNavigate } from "react-router-dom";
+import ButtonLink from "../../GlobalComponents/ButtonLink";
 
 const GameQueueModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
   const [gameId, setGameId] = useState<string | null>(null);
@@ -44,7 +45,7 @@ const GameQueueModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-      <div className="p-6 rounded-lg shadow-lg w-[480px] h-[480px] relative" style={{ background: "linear-gradient(to bottom, #141E34 15%, #375694 85%)" }}>
+      <div className="p-6 rounded-lg shadow-lg w-[480px] h-[480px] relative bg-[#375694]">
 
         <h1 className="text-4xl text-white font-bold text-center mb-6">Čekání na hráče</h1>
 
@@ -79,14 +80,11 @@ const GameQueueModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
           X
         </div>
 
-        {/* Tlačítko ZRUŠIT */}
+        {/* Tlačítko ZRUŠIT (nahrazeno ButtonLink) */}
         <div className="flex justify-center mt-6">
-          <button
-            onClick={onClose}
-            className="bg-[#D9D9D9] text-black border-2 border-red-500 rounded-[30px] px-6 py-2 font-semibold text-[16px] transition-transform duration-200 hover:scale-105"
-          >
-            ZRUŠIT
-          </button>
+          <div onClick={onClose}>
+            <ButtonLink link="#" name="ZRUŠIT" />
+          </div>
         </div>
       </div>
     </div>

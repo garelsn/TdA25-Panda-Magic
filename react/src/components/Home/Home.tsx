@@ -3,11 +3,11 @@ import { Link } from "react-router-dom";
 import RainEffect from "./RainEffect";
 import ButtonLink from "../GlobalComponents/ButtonLink";
 import LoginModal from "../Login/components/LoginModal";
-import GameQueueModal from "../GameQueue/components/GameQueueModal"; // Přidáváme import GameQueueModal (uprav cestu podle potřeby)
+import NewGameModal from "../GameQueue/components/NewGameModal"; // Import nového modálního okna
 
 function Home() {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
-  const [isQueueOpen, setIsQueueOpen] = useState(false); // Nový stav pro modal fronty
+  const [isNewGameOpen, setIsNewGameOpen] = useState(false); // Nový stav pro modal "Nová hra"
 
   return (
     <div className="h-screen">
@@ -74,19 +74,11 @@ function Home() {
               <div
                 onClick={(e) => {
                   e.preventDefault();
-                  setIsQueueOpen(true); // Otevře modal fronty místo navigace
+                  setIsNewGameOpen(true); // Otevře modal "Nová hra" místo navigace
                 }}
               >
                 <ButtonLink link="#" name="Nová hra" onClick={false} />
               </div>
-            </div>
-            <div className="flex md:w-[70%] lg:w-[60%] justify-center mb-4">
-              <img
-                src="./zarivka_idea_bile.svg"
-                alt="Seznam her"
-                className="w-16 mr-3 md:w-32 lg:w-[10%] lg:ml-3 lg:mr-4"
-              />
-              <ButtonLink link="search" name="Seznam her" />
             </div>
             <div className="flex md:w-[70%] lg:w-[60%] justify-center mb-4">
               <img
@@ -101,8 +93,8 @@ function Home() {
       </div>
       {/* Modal s přihlášením */}
       <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
-      {/* Nový modal pro frontu na hru */}
-      <GameQueueModal isOpen={isQueueOpen} onClose={() => setIsQueueOpen(false)} />
+      {/* Nový modal pro "Nová hra" */}
+      <NewGameModal isOpen={isNewGameOpen} onClose={() => setIsNewGameOpen(false)} />
     </div>
   );
 }

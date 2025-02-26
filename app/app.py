@@ -29,8 +29,6 @@ socketio = SocketIO(
     engineio_logger=True  # Enable engine.io logging
 )
 
-
-
 app.config.from_mapping(
     DATABASE=os.path.join(app.instance_path, 'tourdeflask.sqlite'),
 )
@@ -52,16 +50,17 @@ app.register_blueprint(users_bp)
 def api(): 
     return jsonify({"organization": "Student Cyber Games"})
 
-
-
 queue = []
 queue_lock = threading.Lock()
 
 def generate_game_id():
     return "game_" + str(uuid.uuid4())[:8]
 
-
 active_games = {}  # Uložíme informace o hráčích v dané hře
+game_timers = {}   # Slovník pro sledování časovačů her
+
+# Konstanta pro standardní herní čas v sekundách (60 sekund = 1 minuta)
+DEFAULT_GAME_TIME = 60
 
 @socketio.on("join_queue")
 def handle_join_queue(data):
@@ -81,28 +80,94 @@ def handle_join_queue(data):
             username1 = get_user_by_uuid(player1["uuid"]) or "Unknown"
             username2 = get_user_by_uuid(player2["uuid"]) or "Unknown"
 
-
-             # Uložíme informace o hráčích do slovníku aktivních her
+            # Uložíme informace o hráčích do slovníku aktivních her
             active_games[game_id] = {
                 "X": {"sid": player1["sid"], "uuid": player1["uuid"], "username": username1},
                 "O": {"sid": player2["sid"], "uuid": player2["uuid"], "username": username2},
-                "processed": False  # Přidáno nové pole pro sledování stavu hry
+                "processed": False,  # Přidáno nové pole pro sledování stavu hry
+                "current_turn": "X",  # X vždy začíná
+                "last_activity": time.time()  # Pro sledování aktivity ve hře
             }
+            
+            # Inicializujeme časovače pro hru
+            game_timers[game_id] = {
+                "X": DEFAULT_GAME_TIME,
+                "O": DEFAULT_GAME_TIME,
+                "timer_active": True,
+                "last_tick": time.time()
+            }
+            
+            # Spustíme časovač pro tuto hru
+            timer_thread = threading.Thread(target=game_timer_thread, args=(game_id,), daemon=True)
+            timer_thread.start()
+            
             # Posíláme obě UUID správným hráčům
             socketio.emit("game_started", {
                 "game_id": game_id, 
                 "player": "X",
                 "user_uuid": player1["uuid"],  # Každý hráč dostane své vlastní uuid
-                "username": username1
+                "username": username1,
+                "time_limit": DEFAULT_GAME_TIME
             }, room=player1["sid"])
             
             socketio.emit("game_started", {
                 "game_id": game_id, 
                 "player": "O",
                 "user_uuid": player2["uuid"],
-                "username": username2 
+                "username": username2,
+                "time_limit": DEFAULT_GAME_TIME
             }, room=player2["sid"])
 
+def game_timer_thread(game_id):
+    """Vlákno pro odpočítávání času ve hře"""
+    while game_id in game_timers and game_id in active_games:
+        if not game_timers[game_id]["timer_active"]:
+            time.sleep(0.1)  # Krátká pauza, pokud je časovač pozastaven
+            continue
+            
+        current_time = time.time()
+        elapsed = current_time - game_timers[game_id]["last_tick"]
+        game_timers[game_id]["last_tick"] = current_time
+        
+        # Aktuální hráč na tahu
+        current_player = active_games[game_id]["current_turn"]
+        
+        # Odečteme čas jen aktuálnímu hráči
+        if game_timers[game_id][current_player] > 0:
+            game_timers[game_id][current_player] -= elapsed
+            
+            # Pokud čas klesne pod 0, nastavíme na 0
+            if game_timers[game_id][current_player] < 0:
+                game_timers[game_id][current_player] = 0
+            
+            # Emitujeme aktualizaci časovače pravidelně pro všechny (každou sekundu)
+            if int(current_time) != int(current_time - elapsed):
+                socketio.emit("timer_update", {
+                    "X_time": round(game_timers[game_id]["X"]),
+                    "O_time": round(game_timers[game_id]["O"]),
+                    "current_turn": current_player
+                }, room=game_id)
+            
+            # Pokud vypršel čas aktuálnímu hráči
+            if game_timers[game_id][current_player] <= 0 and not active_games[game_id].get("processed", False):
+                game_timers[game_id]["timer_active"] = False
+                winner = "O" if current_player == "X" else "X"
+                
+                socketio.emit("time_out", {
+                    "player": current_player,
+                    "winner": winner
+                }, room=game_id)
+                
+                # Zpracujeme konec hry z důvodu vypršení času
+                handle_game_over({
+                    "game_id": game_id,
+                    "winner": winner,
+                    "reason": "timeout"
+                })
+                
+                break  # Ukončíme časovač pro tuto hru
+        
+        time.sleep(0.1)  # Krátká pauza, abychom nezatěžovali CPU
 
 @socketio.on("make_move")
 def handle_make_move(data):
@@ -113,15 +178,24 @@ def handle_make_move(data):
     
     # Přidejte kontrolu, zda je hra aktivní a není označena jako zpracovaná
     if game_id in active_games and not active_games[game_id].get("processed", False):
+        # Aktualizujeme informaci o poslední aktivitě
+        active_games[game_id]["last_activity"] = time.time()
+        
+        # Změníme aktuálního hráče na tahu
+        active_games[game_id]["current_turn"] = "O" if player == "X" else "X"
+        
         # Ověření tahu by tu mělo být (např. zda je políčko volné), ale pro jednoduchost...
-        socketio.emit("move_made", {"row": row, "col": col, "player": player}, room=game_id)
+        socketio.emit("move_made", {
+            "row": row, 
+            "col": col, 
+            "player": player,
+            "next_turn": active_games[game_id]["current_turn"]
+        }, room=game_id)
     else:
         # Volitelně upozorněte hráče, že hra již skončila
         socketio.emit("game_error", {"message": "Tato hra již byla ukončena"}, room=request.sid)
-    
 
 game_locks = {}
-
 
 @socketio.on("game_over")
 def handle_game_over(data):
@@ -141,6 +215,10 @@ def handle_game_over(data):
             print(f"Hra {game_id} už byla zpracována.")
             return
         active_games[game_id]["processed"] = True  # Označíme hru jako zpracovanou
+        
+        # Zastavíme časovač pro tuto hru
+        if game_id in game_timers:
+            game_timers[game_id]["timer_active"] = False
 
         winner = active_games[game_id].get(winner_symbol, {})
         loser_symbol = "O" if winner_symbol == "X" else "X"
@@ -195,17 +273,18 @@ def handle_game_over(data):
         sqlDB.commit()
         sqlDB.close()
 
+        # Přidáme důvod výhry do odpovědi
+        reason = data.get("reason", "normal")
+        
         socketio.emit("game_over", {
             "winner": winner_username,
             "winner_uuid": winner_uuid,
             "loser": loser_username,
             "loser_uuid": loser_uuid,
             "winner_elo": winner_elo,
-            "loser_elo": loser_elo
+            "loser_elo": loser_elo,
+            "reason": reason
         }, room=game_id)
-
-        # Zámky neodstraňujeme, protože mohou být potřeba pro rematch
-        # ale po určité době bychom mohli vyčistit aktivní hry a zámky, které nejsou používány
 
 rematch_requests = {}  # Uložíme žádosti o odvetu
 
@@ -230,11 +309,7 @@ def handle_rematch_request(data):
         # Vyčistíme žádosti
         del rematch_requests[game_id]
         
-        # Resetujeme stav hry
-        if game_id in active_games:
-            active_games[game_id]["processed"] = False
-            
-        # Informujeme klienty o novém začátku hry
+        # Při rematchi prohodíme role X a O
         player1_sid = active_games[game_id]["X"]["sid"]
         player2_sid = active_games[game_id]["O"]["sid"]
         player1_uuid = active_games[game_id]["X"]["uuid"]
@@ -242,26 +317,49 @@ def handle_rematch_request(data):
         player1_username = active_games[game_id]["X"]["username"]
         player2_username = active_games[game_id]["O"]["username"]
         
-        # Při rematchi prohodíme role X a O
         active_games[game_id] = {
             "X": {"sid": player2_sid, "uuid": player2_uuid, "username": player2_username},
             "O": {"sid": player1_sid, "uuid": player1_uuid, "username": player1_username},
-            "processed": False
+            "processed": False,
+            "current_turn": "X",  # X vždy začíná
+            "last_activity": time.time()
         }
+        
+        # Kompletně resetujeme časovače a nastavíme jako aktivní
+        game_timers[game_id] = {
+            "X": DEFAULT_GAME_TIME,
+            "O": DEFAULT_GAME_TIME,
+            "timer_active": True,
+            "last_tick": time.time()
+        }
+        
+        # Zastavíme případný běžící časovač a spustíme nový
+        # (Pokud možné, je lepší ukončit starý časovač explicitně)
+        timer_thread = threading.Thread(target=game_timer_thread, args=(game_id,), daemon=True)
+        timer_thread.start()
         
         socketio.emit("game_started", {
             "game_id": game_id, 
             "player": "X",
             "user_uuid": player2_uuid,
-            "username": player2_username
+            "username": player2_username,
+            "time_limit": DEFAULT_GAME_TIME
         }, room=player2_sid)
         
         socketio.emit("game_started", {
             "game_id": game_id, 
             "player": "O",
             "user_uuid": player1_uuid,
-            "username": player1_username
+            "username": player1_username,
+            "time_limit": DEFAULT_GAME_TIME
         }, room=player1_sid)
+        
+        # Odešleme inicializační aktualizaci časovače všem hráčům
+        socketio.emit("timer_update", {
+            "X_time": DEFAULT_GAME_TIME,
+            "O_time": DEFAULT_GAME_TIME,
+            "current_turn": "X"  # X vždy začíná
+        }, room=game_id)
 
 # Funkce pro čištění starých dat
 def cleanup_old_games():
@@ -280,6 +378,8 @@ def cleanup_old_games():
                 del active_games[game_id]
             if game_id in game_locks:
                 del game_locks[game_id]
+            if game_id in game_timers:
+                del game_timers[game_id]
             if game_id in rematch_requests:
                 del rematch_requests[game_id]
 

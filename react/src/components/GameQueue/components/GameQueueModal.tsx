@@ -8,16 +8,16 @@ const GameQueueModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
   const [opponentFound, setOpponentFound] = useState(false);
   const navigate = useNavigate();
   const socketUrl = process.env.NODE_ENV === "development" ? "http://127.0.0.1:5000" : "/";
-
+  console.log(gameId, opponentFound)
   useEffect(() => {
     if (!isOpen) return;
     
     const token = localStorage.getItem("token");
-    // if (!token) {
-    //   alert("Musíte být přihlášeni, abyste se mohli připojit do hry.");
-    //   navigate("/");
-    //   return;
-    // }
+    if (!token) {
+      alert("Musíte být přihlášeni, abyste se mohli připojit do hry.");
+      navigate("/");
+      return;
+    }
 
     const newSocket = io(socketUrl);
     newSocket.emit("join_queue");
@@ -40,7 +40,7 @@ const GameQueueModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
 
   const username = localStorage.getItem("username") || "Já";
   const profilePic = localStorage.getItem("profilePic") || "/pawn.png"; // Používáme pěšce jako výchozí ikonu
-
+  console.log(username)
   if (!isOpen) return null;
 
   return (

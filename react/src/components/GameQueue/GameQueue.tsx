@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import io from "socket.io-client";
 import { useNavigate } from "react-router-dom";
-import { GetUseUser } from "../../Fetch/GetUseUser";
+
 
 const GameQueue = () => {
   const [gameId, setGameId] = useState<string | null>(null);

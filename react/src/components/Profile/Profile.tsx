@@ -8,7 +8,7 @@ const Profile = () => {
     // Funkce pro odhlášení
     const handleLogout = () => {
         localStorage.removeItem("token"); // Smazání tokenu
-        navigate("/login"); // Přesměrování na přihlašovací stránku
+        navigate("/"); // Přesměrování na přihlašovací stránku
     };
     console.log(user);
     return (

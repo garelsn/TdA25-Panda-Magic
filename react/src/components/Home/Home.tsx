@@ -8,7 +8,7 @@ import NewGameModal from "../GameQueue/components/NewGameModal"; // Import nové
 function Home() {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isNewGameOpen, setIsNewGameOpen] = useState(false); // Nový stav pro modal "Nová hra"
-
+  const token = localStorage.getItem("token");
   return (
     <div className="h-screen">
       <div className="h-[50%] md:h-3/5 bg-[#1A1A1A] relative overflow-hidden">
@@ -20,21 +20,34 @@ function Home() {
             className="w-1/2 md:w-[50%] lg:w-[20%] absolute top-3 left-5 m-4 z-20"
           />
         </Link>
-        <div className="absolute top-3 right-5 m-4 z-50 flex items-center">
-          <div
-            onClick={(e) => {
-              e.preventDefault();
-              setIsLoginOpen(true);
-            }}
-          >
-            <ButtonLink link="#" name="Přihlášení" onClick={false} />
-          </div>
-          <img
-            src="./profile.svg"
-            alt="Přihlášení"
-            className="w-16 ml-3"
-          />
-        </div>
+                        {token ? 
+                  // Když je token (uživatel je přihlášený), zobraz odkaz na profil
+                  <div className="absolute top-3 right-5 m-4 z-50 flex items-center">
+                    <ButtonLink link="/profile" name="Profil" onClick={false} />
+                    <img
+                      src="./profile.svg"
+                      alt="Profil"
+                      className="w-16 ml-3 hidden md:block"
+                    />
+                  </div>
+                : 
+                  // Když není token (uživatel není přihlášený), zobraz tlačítko přihlášení
+                  <div className="absolute top-3 right-5 m-4 z-50 flex items-center">
+                    <div
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setIsLoginOpen(true);
+                      }}
+                    >
+                      <ButtonLink link="#" name="Přihlášení" onClick={false} />
+                    </div>
+                    <img
+                      src="./profile.svg"
+                      alt="Přihlášení"
+                      className="w-16 ml-3 hidden md:block"
+                    />
+                  </div>
+                }
         {/* Titulek */}
         <h1 className="text-white md:text-7xl lg:text-8xl font-bold flex items-center justify-center text-6xl md:mt-36 z-20 relative mt-56">
           Piškv

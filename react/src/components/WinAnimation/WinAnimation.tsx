@@ -1,149 +1,178 @@
-import Confetti from "react-confetti";
 import { useEffect, useState } from "react";
-
+import Confetti from "react-confetti";
+import useWindowSize from "./hooks/useWindowSize";
+import useRematch from "./hooks/useRematch";
+import { checkWinner } from "./utils/gameLogic";
+import WinModal from "./WinModal";
 
 type BoardProps = {
   board: string[][];
   setIsGameOver: React.Dispatch<React.SetStateAction<boolean>>;
   setWinner: React.Dispatch<React.SetStateAction<"X" | "O" | null>>;
+  socket: any;
+  gameId: string;
+  player: "X" | "O";
+  showWinModal: boolean;
+  setShowWinModal: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const WinAnimation: React.FC<BoardProps> = ({ board, setIsGameOver, setWinner }) => {
+const WinAnimation: React.FC<BoardProps> = ({ 
+  board, 
+  setIsGameOver, 
+  setWinner, 
+  socket, 
+  gameId, 
+  player, 
+  showWinModal, 
+  setShowWinModal 
+}) => {
+  const { width, height } = useWindowSize();
+  const { rematchRequested, opponentWantsRematch, requestRematch } = useRematch(socket, gameId, player);
   const [isConfettiActive, setIsConfettiActive] = useState(false);
-  const [windowSize, setWindowSize] = useState<{ width: number | undefined; height: number | undefined }>({
-    width: undefined,
-    height: undefined,
-  });
-  const [modalVisible, setModalVisible] = useState(false);
-  const [winner, setWinnerState] = useState<"X" | "O" | null>(null);
+  const [localWinner, setLocalWinner] = useState<"X" | "O" | null>(null);
+  
+  // Časovače pro hráče (60 sekund = 1 minuta), nyní synchronizovány se serverem
+  const [xTimer, setXTimer] = useState(60);
+  const [oTimer, setOTimer] = useState(60);
+  
+  // Aktuální hráč na tahu (X začíná)
+  const [currentTurn, setCurrentTurn] = useState<"X" | "O">("X");
+
+  // Reset funkce
+  const resetWinState = () => {
+    console.log("Resetuji vítězný stav");
+    setIsGameOver(false);
+    setWinner(null);
+    setLocalWinner(null);
+    setIsConfettiActive(false);
+    setShowWinModal(false);
+    // Reset časovačů se provede automaticky díky serveru
+  };
 
   useEffect(() => {
-    setWindowSize({
-      width: window.innerWidth,
-      height: window.innerHeight,
-    });
+    if (!socket) return;
 
-    if (!isConfettiActive) {
-      window.onresize = null;
-    }
-  }, [isConfettiActive]);
-
-  function handleWindowSizeChange() {
-    setWindowSize({
-      width: window.innerWidth,
-      height: window.innerHeight,
-    });
-  }
-
-  function fireConfetti(winner: "X" | "O") {
-    window.onresize = handleWindowSizeChange;
-    setIsConfettiActive(true);
-    setModalVisible(true);
-    setWinnerState(winner);
-  }
-
-  function searchForWin() {
-    if (isConfettiActive) {
-      return;
-    }
-
-    const searchPatterns: Map<string, number[][]> = new Map<string, number[][]>([
-      ["horizontalSet", [
-        [-2, 0],
-        [-1, 0],
-        [1, 0],
-        [2, 0],
-      ]],
-      ["verticalSet", [
-        [0, -2],
-        [0, -1],
-        [0, 1],
-        [0, 2],
-      ]],
-      ["diagonalSet", [
-        [-2, -2],
-        [-1, -1],
-        [1, 1],
-        [2, 2],
-      ]],
-      ["antiDiagonalSet", [
-        [2, -2],
-        [1, -1],
-        [-1, 1],
-        [-2, 2],
-      ]],
-    ]);
-
-    function searchByPattern(pattern: number[][], position: number[]): boolean {
-      const symbolToMatch = board[position[0]][position[1]];
-
-      if (symbolToMatch === "") {
-        return false;
+    const handleGameStarted = (data: any) => {
+      console.log("WinAnimation: Nová hra začala, resetuji stavy", data);
+      resetWinState();
+      // Nastavení výchozích časových limitů z dat od serveru
+      if (data.time_limit) {
+        setXTimer(data.time_limit);
+        setOTimer(data.time_limit);
       }
+      setCurrentTurn("X"); // X vždy začíná
+    };
 
-      for (const modifier of pattern) {
-        try {
-          if (board[position[0] + modifier[0]][position[1] + modifier[1]] !== symbolToMatch) {
-            return false;
-          }
-        } catch (e) {
-          return false;
-        }
+    const handleRestartGame = () => {
+      console.log("WinAnimation: Hra restartována, resetuji stavy");
+      resetWinState();
+    };
+
+    const handleMoveMade = (data: any) => {
+      // Při tahu aktualizujeme informaci o tom, kdo je na tahu
+      if (data.next_turn) {
+        setCurrentTurn(data.next_turn);
       }
+    };
 
-      return true;
-    }
+    const handleTimerUpdate = (data: any) => {
+      // Aktualizace časovačů podle serveru
+      if (data.X_time !== undefined) setXTimer(data.X_time);
+      if (data.O_time !== undefined) setOTimer(data.O_time);
+      if (data.current_turn) setCurrentTurn(data.current_turn);
+    };
 
-    for (let y = 0; y < board.length; y++) {
-      for (let x = 0; x < board[y].length; x++) {
-        for (const searchPatternKey of searchPatterns) {
-          if (searchByPattern(searchPatternKey[1], [y, x])) {
-            const winner = board[y][x] === "X" ? "X" : "O";
-            fireConfetti(winner);
-            setWinner(winner);
-            setIsGameOver(true);
-            return;
-          }
-        }
+    const handleTimeOut = (data: any) => {
+      // Zpracování vypršení času hráči
+      if (data.winner) {
+        console.log(`Čas vypršel hráči ${data.player}, vyhrává ${data.winner}`);
+        setWinner(data.winner);
+        setLocalWinner(data.winner);
+        setIsGameOver(true);
+        setIsConfettiActive(true);
+        setShowWinModal(true);
       }
-    }
-  }
+    };
+
+    // Přidání event listenerů
+    socket.on("game_started", handleGameStarted);
+    socket.on("restart_game", handleRestartGame);
+    socket.on("move_made", handleMoveMade);
+    socket.on("timer_update", handleTimerUpdate);
+    socket.on("time_out", handleTimeOut);
+
+    // Cleanup
+    return () => {
+      if (socket) {
+        socket.off("game_started", handleGameStarted);
+        socket.off("restart_game", handleRestartGame);
+        socket.off("move_made", handleMoveMade);
+        socket.off("timer_update", handleTimerUpdate);
+        socket.off("time_out", handleTimeOut);
+      }
+    };
+  }, [socket, setIsGameOver, setWinner, setShowWinModal]);
 
   useEffect(() => {
-    if (board) {
-      searchForWin();
+    const foundWinner = checkWinner(board);
+    if (foundWinner && !localWinner) {
+      console.log(`Nalezen vítěz: ${foundWinner}`);
+      setWinner(foundWinner);
+      setLocalWinner(foundWinner);
+      setIsGameOver(true);
+      setIsConfettiActive(true);
+      setShowWinModal(true);
+      
+      // Informovat server o výhře
+      if (socket && gameId) {
+        socket.emit("game_over", {
+          game_id: gameId,
+          winner: foundWinner,
+          reason: "normal"
+        });
+      }
+    } else if (!foundWinner && board.some(row => row.some(cell => cell !== ""))) {
+      // Hra probíhá - není vítěz, ale na desce jsou tahy
+      console.log("Hra probíhá, žádný vítěz");
     }
-  }, [board]);
+  }, [board, setWinner, setIsGameOver, setShowWinModal, localWinner, socket, gameId]);
+
+  // Pokud se změní gameId, měli bychom resetovat stav vítězství
+  useEffect(() => {
+    if (gameId) {
+      console.log("Změna gameId, resetuji stavy");
+      resetWinState();
+    }
+  }, [gameId]);
+
+  // Formátování času (mm:ss)
+  const formatTime = (timeInSeconds: number) => {
+    const minutes = Math.floor(timeInSeconds / 60);
+    const seconds = Math.floor(timeInSeconds % 60);
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  };
 
   return (
     <>
-      {/* Modal */}
-      {modalVisible && winner && (
-        <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50">
-          <div className="bg-white text-center p-8 rounded-lg shadow-lg relative md:w-[40%] md:h-[20%] lg:w-[30%] lg:h-[20%] flex flex-col md:flex-row items-center justify-center">
-            <div className="flex flex-col items-center">
-              <h2 className="text-3xl font-bold text-gray-800 md:text-5xl">
-                Vyhrál hráč
-              </h2>
-              <span className="inline-block w-12 h-12 ml-0 mt-4 md:ml-2 md:mt-0">
-                <img
-                  src={winner === "X" ? "../../X_cervene.svg" : "../../O_modre.svg"}
-                  alt={`Hráč ${winner}`}
-                  className="w-full h-full mt-4"
-                />
-              </span>
-            </div>
-            <button
-              className="absolute top-2 right-3 text-2xl font-bold text-gray-600 md:text-5xl md:right-6 lg:right-4"
-              onClick={() => setModalVisible(false)}
-            >
-              ×
-            </button>
-          </div>
-
-          {isConfettiActive && <Confetti width={windowSize.width} height={windowSize.height} />}
+      {/* Časovače */}
+      <div className="flex justify-between mb-4 mt-2 px-4">
+        <div className={`p-2 rounded-md ${currentTurn === "X" ? "bg-blue-100 font-bold" : ""}`}>
+          Hráč X: {formatTime(xTimer)}
         </div>
+        <div className={`p-2 rounded-md ${currentTurn === "O" ? "bg-red-100 font-bold" : ""}`}>
+          Hráč O: {formatTime(oTimer)}
+        </div>
+      </div>
+      
+      {localWinner && showWinModal && (
+        <WinModal 
+          winner={localWinner} 
+          rematchRequested={rematchRequested} 
+          opponentWantsRematch={opponentWantsRematch} 
+          requestRematch={requestRematch} 
+        />
       )}
+      {isConfettiActive && <Confetti width={width} height={height} />}
     </>
   );
 };

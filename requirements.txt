@@ -1,3 +1,4 @@
 bcrypt
-jwt
+PyJWT
 flask_socketio
+flask_cors

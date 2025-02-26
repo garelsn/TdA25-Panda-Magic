@@ -1,41 +1,9 @@
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom"; // Pro přesměrování
-
-interface User {
-    username: string;
-    email: string;
-    profileImage: string;
-}
+import { GetUseUser } from "../../Fetch/GetUseUser"; // Funkce pro získání uživatelských dat
 
 const Profile = () => {
-    const [user, setUser] = useState<User | null>(null);
     const navigate = useNavigate(); // Hook pro přesměrování
-
-    useEffect(() => {
-        const fetchProfile = async () => {
-            const token = localStorage.getItem("token");
-            console.log("Token:", token); // Log tokenu
-
-            if (!token) {
-                navigate("/login"); // Pokud není token, přesměruj na login
-                return;
-            }
-
-            const response = await fetch("http://127.0.0.1:5000/api/v1/profile", {
-                method: "GET",
-                headers: { Authorization: `Bearer ${token}` }, // Správný formát tokenu
-            });
-
-            const data = await response.json();
-            if (response.ok) {
-                setUser(data);
-            } else {
-                console.error("Chyba při načítání profilu:", data.message);
-            }
-        };
-
-        fetchProfile();
-    }, [navigate]);
+    const { user } = GetUseUser();
 
     // Funkce pro odhlášení
     const handleLogout = () => {

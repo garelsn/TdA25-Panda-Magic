@@ -16,42 +16,55 @@ def login():
     data = request.get_json()
     user_input = data.get("username_or_email")
     password = data.get("password")
-
+    
     if not user_input or not password:
         return jsonify({"message": "Missing username/email or password"}), 400
-
+    
     sqlDB = db.get_db()
     cursor = sqlDB.cursor()
-
+    
     # Najdi uživatele podle uživatelského jména nebo e-mailu
     cursor.execute("SELECT * FROM users WHERE username=? OR email=?", (user_input, user_input))
     user = cursor.fetchone()
-
+    
     if not user:
         return jsonify({"message": "User not found"}), 404
-
+    
     # Získání názvů sloupců
     column_names = [description[0] for description in cursor.description]
-
+    
     # Ověření hesla
     stored_password = user[column_names.index("password")]  # Získání hesla podle názvu sloupce
-    if not bcrypt.checkpw(password.encode("utf-8"), stored_password):  
+    if not bcrypt.checkpw(password.encode("utf-8"), stored_password):
         return jsonify({"message": "Invalid credentials"}), 401
-
+    
+    # Aktualizace času přihlášení na aktuální čas
+    current_time = datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
+    user_id = user[column_names.index("uuid")]
+    cursor.execute("UPDATE users SET loginAt=? WHERE uuid=?", (current_time, user_id))
+    sqlDB.commit()
+    
     # Generování JWT tokenu
     token = jwt.encode(
         {
-            "user_id": user[column_names.index("uuid")],
+            "user_id": user_id,
             "exp": datetime.datetime.utcnow() + datetime.timedelta(days=1)  # 1 den místo 1 hodiny
         },
         SECRET_KEY,
         algorithm="HS256"
     )
-
+    
+    # Znovu načtení aktualizovaných dat uživatele
+    cursor.execute("SELECT * FROM users WHERE uuid=?", (user_id,))
+    updated_user = cursor.fetchone()
+    
     # Převod výsledků z databáze do JSON formátu
-    user_data = {column_names[i]: (user[i].decode("utf-8") if isinstance(user[i], bytes) else user[i]) for i in range(len(user))}
-
+    user_data = {column_names[i]: (updated_user[i].decode("utf-8") if isinstance(updated_user[i], bytes) else updated_user[i]) for i in range(len(updated_user))}
+    
     return jsonify({"token": token, "user": user_data}), 200
+
+
+
 
 
 @auth_bp.route("/api/v1/profile", methods=["GET"])

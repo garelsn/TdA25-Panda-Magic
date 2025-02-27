@@ -1,9 +1,11 @@
 import click
 from flask import current_app, g
 from flask.cli import with_appcontext
-
+import bcrypt
 import sqlite3
-
+import uuid
+import json
+from datetime import datetime
 
 def get_db():
     if 'db' not in g:
@@ -33,14 +35,48 @@ def init_db():
         db.executescript(f.read().decode('utf8'))
 
 
+def create_default_admin():
+    """
+    Vytvoří výchozího administrátora, pokud neexistuje
+    """
+    db = get_db()
+    cursor = db.cursor()
+
+    # Zkontrolujeme, zda už admin existuje
+    cursor.execute("SELECT 1 FROM users WHERE admin = 1")  # SQLite používá 1 místo TRUE
+    if cursor.fetchone() is None:
+        admin_id = str(uuid.uuid4())
+        created_at = login_at = datetime.utcnow().isoformat()
+        hashed_password = bcrypt.hashpw("StudentCyberGames25!".encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+
+        cursor.execute(
+            """
+            INSERT INTO users (uuid, createdAt, loginAt, username, email, password, 
+                               elo, wins, draws, losses, profileImage, ban, admin, games)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (admin_id, created_at, login_at, "TdA", "tda@scg.cz", hashed_password,
+             0.0, 0, 0, 0, "default.webp", 0, 1, json.dumps([]))  
+        )
+        db.commit()  # ❗ Uložit změny ❗
+        print("Admin uživatel byl vytvořen.")
+    else:
+        print("Admin už existuje.")
+
+
+
+
 @click.command('init-db')
 @with_appcontext
 def init_db_command():
     """
-    Definujeme příkaz příkazové řádky
+    Inicializuje databázi a poté vytvoří výchozího admina
     """
     init_db()
     click.echo('Initialized the database.')
+
+    # Po inicializaci databáze vytvoříme admina
+    create_default_admin()
 
 
 def init_app(app):

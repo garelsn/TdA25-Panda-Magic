@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import ButtonLink from "../GlobalComponents/ButtonLink";
+import { Link } from "react-router-dom";
+// import ButtonLink from "../GlobalComponents/ButtonLink";
 
 interface Player {
   rank: number;
@@ -10,15 +10,15 @@ interface Player {
 }
 
 const TopPlayers = () => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const [topPlayers, setTopPlayers] = useState<Player[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   // Funkce pro zavření (návrat na domovskou stránku)
-  const handleClose = () => {
-    navigate("/");
-  };
+  // const handleClose = () => {
+  //   navigate("/");
+  // };
 
   useEffect(() => {
     const fetchTopPlayers = async () => {

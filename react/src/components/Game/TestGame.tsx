@@ -195,9 +195,11 @@ function FirstGame() {
   );
     
   return (
-    <div className="h-screen flex flex-col relative">
-      {connectionStatus}
-      <BannerSm title="Nová hra" url="../../Think-different-Academy_LOGO_oficialni-bile.svg" />
+    <div>
+        {connectionStatus}
+        <BannerSm title="Nová hra" url="../../Think-different-Academy_LOGO_oficialni-bile.svg" />
+      <div className="h-[80vh] flex flex-col relative p-4">
+    
       <WinAnimation 
         board={board} 
         setIsGameOver={setIsGameOver} 
@@ -208,20 +210,32 @@ function FirstGame() {
         showWinModal={showWinModal} 
         setShowWinModal={setShowWinModal} 
       />
-      <Board 
-        board={board} 
-        onCellClick={handleCellClick} 
-        x="X_cervene.svg" 
-        o="O_modre.svg" 
-        currentPlayer={currentPlayer} 
-      />
-      <div className="mt-28 flex md:grid md:grid-cols-2 items-center bg-slate-100 w-full lg:min-w-[50%] lg:max-w-[65%] p-4 rounded-xl md:col-span-1 lg:grid col-span-2">
-        <img
-          src={imageAndText.src}
-          alt="Dynamický obrázek"
-          className="w-20 h-20 mb-2 bg-[#1A1A1A] rounded-lg mr-14 md:mr-0"
-        />
-        {playerIndicator}
+      
+      {/* Main content area with proper spacing */}
+      <div className="flex flex-col md:flex-row justify-center items-center gap-6 w-full mt-4">
+        {/* Game board */}
+        <div className="w-full md:w-auto">
+          <Board 
+            board={board} 
+            onCellClick={handleCellClick} 
+            x="X_cervene.svg" 
+            o="O_modre.svg" 
+            currentPlayer={currentPlayer} 
+          />
+        </div>
+        
+        {/* Player status indicator */}
+        <div className="flex items-center bg-slate-100 p-4 rounded-xl w-full md:w-64">
+          <img
+            src={imageAndText.src}
+            alt="Dynamický obrázek"
+            className="w-20 h-20 bg-[#1A1A1A] rounded-lg mr-4"
+          />
+          <div className="flex flex-col">
+            {playerIndicator}
+          </div>
+        </div>
+      </div>
       </div>
     </div>
   );

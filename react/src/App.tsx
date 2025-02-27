@@ -8,6 +8,7 @@ import Login from "./components/Login/Login";
 import Profile from "./components/Profile/Profile";
 import GameQueue from "./components/GameQueue/GameQueue";
 import TestGame from "./components/Game/TestGame";
+import TopPlayers from "./components/TopPlayers/TopPlayers";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path="/login" element={<Login/>} />
         <Route path="/profile" element={<Profile/>}/>
         <Route path="/line" element={<GameQueue/>}/>
+        <Route path="/top" element={<TopPlayers/>}/>
         {/* Ostatní routy */}
       </Routes>
     </Router>

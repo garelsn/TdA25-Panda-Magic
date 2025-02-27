@@ -13,7 +13,7 @@ const GameQueue = () => {
     ? 'http://127.0.0.1:5000' 
     : window.location.origin;
   const { user, isLoading } = GetUseUser();
-
+console.log(gameId)
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentAnimal(animalIcons[Math.floor(Math.random() * animalIcons.length)]);

@@ -20,6 +20,10 @@ def line():  # put application's code here
 def login():  # put application's code here
     return send_from_directory(current_app.static_folder, 'index.html') # Vrátí HTML soubor z templates
     # return "Hello TdA 🐼 Magic "
+@routes_bp.route('/profile')
+def profile():  # put application's code here
+    return send_from_directory(current_app.static_folder, 'index.html') # Vrátí HTML soubor z templates
+    # return "Hello TdA 🐼 Magic "
 
 @routes_bp.route('/search')
 def gameSearch():  # put application's code here

@@ -255,8 +255,8 @@ def handle_game_over(data):
         except json.JSONDecodeError:
             winner_games, loser_games = [], []
 
-        winner_games.append({"username": loser_username, "uuid": loser_uuid})
-        loser_games.append({"username": winner_username, "uuid": winner_uuid})
+        winner_games.append({"username": loser_username, "uuid": loser_uuid,"result":"win"})
+        loser_games.append({"username": winner_username, "uuid": winner_uuid,"result":"lose"})
 
         winner_elo = think_different_elo(winner_elo, loser_elo, 1, winner_wins, 0, loser_losses)
         loser_elo = think_different_elo(loser_elo, winner_elo, 0, loser_losses, 0, winner_wins)

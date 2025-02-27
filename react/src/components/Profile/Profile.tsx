@@ -22,7 +22,6 @@ const Profile = () => {
   if (!user) {
     return <p>Profil není k dispozici.</p>;
   }
-
   return (
     <div
       className="min-h-screen"
@@ -52,7 +51,7 @@ const Profile = () => {
         <div className="bg-[#D9D9D9] p-4 rounded-lg shadow-md w-full h-[100px] text-center">
           <div className="flex items-center space-x-4 h-full">
             {/* Profilový obrázek */}
-            <div className="w-20 h-20 border-2 border-black rounded-lg overflow-hidden"></div>
+            <img className="w-20 h-20  object-cover  rounded-md" src={user.profileImage} alt="User profile" />
             {/* Jméno a datum registrace */}
             <div className="text-left flex flex-col justify-center">
               <p>
@@ -105,7 +104,7 @@ const Profile = () => {
           <div className="bg-[#D9D9D9] p-4 rounded-lg shadow-md w-[480px] h-[150px] text-center text-xl">
             <div className="flex items-center space-x-4 h-full">
               {/* Profilový obrázek */}
-              <div className="w-20 h-20 border-2 border-black rounded-lg overflow-hidden"></div>
+              <img className="w-32 h-32  object-cover rounded-md" src={user.profileImage} alt="User profile" />
               {/* Jméno a datum registrace */}
               <div className="text-left flex flex-col justify-center">
                 <p>

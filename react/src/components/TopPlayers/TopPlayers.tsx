@@ -4,7 +4,7 @@ import ButtonLink from "../GlobalComponents/ButtonLink";
 
 interface Player {
   rank: number;
-  name: string;
+  username: string;
   elo: number;
   profileImage: string;
 }
@@ -27,8 +27,8 @@ const TopPlayers = () => {
       // Uprav URL dle tvého API endpointu
       const apiUrl =
         process.env.NODE_ENV === "development"
-          ? "http://127.0.0.1:5000/api/v1/top-players"
-          : `${window.location.origin}/api/v1/top-players`;
+          ? "http://127.0.0.1:5000/api/v1/users"
+          : `${window.location.origin}/api/v1/users`;
       try {
         const response = await fetch(apiUrl, {
           method: "GET",
@@ -54,6 +54,23 @@ const TopPlayers = () => {
     fetchTopPlayers();
   }, []);
 
+  // Seřazení hráčů podle ELO bodů - přesunuto do useEffect, aby se neprovádělo při každém renderu
+  useEffect(() => {
+    if (topPlayers.length > 0) {
+      setTopPlayers(prev => [...prev].sort((a, b) => b.elo - a.elo));
+    }
+  }, [topPlayers.length]);
+
+  // Funkce pro vytvoření dvojic hráčů pro layout na PC
+  const createPlayerPairs = () => {
+    const pairs = [];
+    for (let i = 0; i < topPlayers.length; i += 2) {
+      // Vytváříme páry hráčů (i, i+1)
+      pairs.push(topPlayers.slice(i, i + 2));
+    }
+    return pairs;
+  };
+
   return (
     <div
       className="min-h-screen"
@@ -65,41 +82,73 @@ const TopPlayers = () => {
           <img
             src="./Think-different-Academy_LOGO_oficialni-bile.svg"
             alt="Logo"
-            className="w-16 h-16" // Upraveno na menší velikost podle obrázku
+            className="w-56 h-16" // Upraveno na menší velikost podle obrázku
           />
         </Link>
-        <h1 className="text-white text-2xl font-bold  items-center space-x-4">Žebříček</h1>
-
+        <h1 className="text-white text-2xl font-bold items-center space-x-4">Žebříček</h1>
       </div>
 
       {/* Hlavní obsah – seznam top hráčů */}
       <div className="p-6 flex justify-center">
         {isLoading ? (
-          <p>Načítání...</p>
+          <p className="text-white">Načítání...</p>
         ) : error ? (
-          <p>Chyba: {error}</p>
+          <p className="text-white">Chyba: {error}</p>
         ) : (
-          <div className="bg-white p-4 rounded-lg shadow-md w-[400px] border border-gray-300">
-            <h2 className="text-xl font-bold text-center mb-4">Top hráči</h2>
-            {topPlayers.map((player) => (
-              <div
-                key={player.rank}
-                className="bg-[#E8E8E8] p-4 mb-2 rounded-md flex items-center justify-between"
-              >
-                <div className="flex items-center space-x-2">
-                  <span className="font-bold">{player.rank}.</span>
-                  <div className="w-10 h-10 border-2 border-black rounded-lg overflow-hidden">
-                    <img
-                      src={player.profileImage}
-                      alt={`${player.name} profil`}
-                      className="w-full h-full object-cover"
-                    />
+          <div className="w-full max-w-4xl">
+            <h2 className="text-4xl font-bold text-center mb-4 text-white">Top hráči</h2>
+            
+            {/* Mobilní zobrazení - jeden sloupec (defaultní) */}
+            <div className="md:hidden">
+              {topPlayers.map((player, index) => (
+                <div
+                  key={player.rank || index}
+                  className="bg-white p-4 mb-2 rounded-md flex items-center justify-between"
+                >
+                  <div className="flex items-center space-x-2">
+                    <span className="font-bold">{index + 1}.</span>
+                    <div className="w-10 h-10 border-2 border-black rounded-lg overflow-hidden">
+                      <img
+                        src={player.profileImage}
+                        alt={`${player.username} profil`}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <p>{player.username}</p>
                   </div>
-                  <p>{player.name}</p>
+                  <p>ELO: {player.elo}</p>
                 </div>
-                <p>ELO {player.elo}</p>
-              </div>
-            ))}
+              ))}
+            </div>
+            
+            {/* PC zobrazení - dva sloupce */}
+            <div className="hidden md:block">
+              {createPlayerPairs().map((pair, pairIndex) => (
+                <div key={pairIndex} className="flex gap-4 mb-2">
+                  {pair.map((player, playerIndex) => (
+                    <div
+                      key={player.rank || (pairIndex * 2 + playerIndex)}
+                      className="bg-white p-4 rounded-md flex items-center justify-between flex-1 "
+                    >
+                      <div className="flex items-center space-x-2">
+                        <span className="font-bold text-xl">{pairIndex * 2 + playerIndex + 1}.</span>
+                        <div className="w-10 h-10 border-2 border-black rounded-lg overflow-hidden">
+                          <img
+                            src={player.profileImage}
+                            alt={`${player.username} profil`}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <p className="text-2xl">{player.username}</p>
+                      </div>
+                      <p className="text-2xl">ELO: {player.elo}</p>
+                    </div>
+                  ))}
+                  {/* Pokud je v páru jen jeden hráč, přidáme prázdný div pro zachování layoutu */}
+                  {pair.length === 1 && <div className="flex-1"></div>}
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>

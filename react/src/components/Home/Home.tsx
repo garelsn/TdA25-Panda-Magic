@@ -91,7 +91,7 @@ function Home() {
                   setIsNewGameOpen(true); // Otevře modal "Nová hra" místo navigace
                 }}
               >
-                <ButtonLink link="#" name="Nová hra" onClick={false} />
+                <ButtonLink link="/line" name="Nová hra" onClick={false} />
               </div>
             </div>
             <div className="flex md:w-[70%] lg:w-[60%] justify-center mb-4">

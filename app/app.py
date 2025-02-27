@@ -60,7 +60,7 @@ active_games = {}  # Uložíme informace o hráčích v dané hře
 game_timers = {}   # Slovník pro sledování časovačů her
 
 # Konstanta pro standardní herní čas v sekundách (60 sekund = 1 minuta)
-DEFAULT_GAME_TIME = 60
+DEFAULT_GAME_TIME = 480
 
 @socketio.on("join_queue")
 def handle_join_queue(data):

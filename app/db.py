@@ -47,8 +47,7 @@ def create_default_admin():
     if cursor.fetchone() is None:
         admin_id = str(uuid.uuid4())
         created_at = login_at = datetime.utcnow().isoformat()
-        hashed_password = bcrypt.hashpw("StudentCyberGames25!".encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
-
+        hashed_password = bcrypt.hashpw("StudentCyberGames25!".encode("utf-8"), bcrypt.gensalt())
         cursor.execute(
             """
             INSERT INTO users (uuid, createdAt, loginAt, username, email, password, 
